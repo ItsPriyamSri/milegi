@@ -1,0 +1,132 @@
+@import "../ui/tokens.css";
+@import "../ui/primitives.css";
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--step-0) / 1.6 var(--font);
+}
+
+:lang(hi) { line-height: 1.65; }
+
+h1, h2, h3, h4 { margin: 0; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: var(--step-4); }
+h2 { font-size: var(--step-2); }
+h3 { font-size: var(--step-1); }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: var(--s5); }
+
+a { color: var(--action); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--action-hover); }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+hr { border: 0; border-top: 1px solid var(--rule); margin: var(--s5) 0; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--action);
+  color: var(--action-ink);
+  padding: var(--s2) var(--s4);
+  z-index: 20;
+}
+.skip-link:focus { left: 0; }
+
+.banner {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--step-s);
+  padding: 6px var(--s4);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.banner b { font-weight: 600; }
+
+.simbadge {
+  background: var(--breach-bg);
+  color: var(--breach);
+  border-bottom: 1px solid color-mix(in srgb, var(--breach) 30%, transparent);
+  font-size: var(--step-s);
+  padding: 6px var(--s4);
+  text-align: center;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+.brand { display: flex; align-items: baseline; gap: var(--s2); text-decoration: none; color: var(--ink); }
+.brand-mark { font-size: var(--step-2); font-weight: 700; letter-spacing: -0.02em; }
+.brand-sub { font-size: var(--step-s); color: var(--ink-faint); }
+.topbar-actions { display: flex; align-items: center; gap: var(--s2); }
+.toggle {
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink-muted);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: var(--step-s);
+  min-height: 32px;
+  padding: 2px var(--s3);
+  cursor: pointer;
+}
+.toggle:hover { background: var(--surface-sunk); color: var(--ink); }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: var(--s5) var(--s4) var(--s8); }
+.wrap-narrow { max-width: 720px; }
+.wrap-wide { max-width: 1400px; }
+
+.sitefoot {
+  border-top: 1px solid var(--rule);
+  padding: var(--s5) var(--s4) var(--s7);
+  color: var(--ink-faint);
+  font-size: var(--step-s);
+}
+.sitefoot a { color: var(--ink-muted); }
+.sitefoot .row { gap: var(--s4); }
+
+/* Landing */
+.lede { font-size: var(--step-2); max-width: 46ch; }
+.doors { display: grid; gap: var(--s3); margin: var(--s5) 0; }
+@media (min-width: 640px) { .doors { grid-template-columns: 1fr 1fr; } }
+.door {
+  display: block;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--s4);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color var(--motion), background var(--motion);
+}
+.door:hover { border-color: var(--action); background: var(--surface-sunk); }
+.door-primary { background: var(--action); border-color: var(--action); color: var(--action-ink); }
+.door-primary:hover { background: var(--action-hover); border-color: var(--action-hover); color: var(--action-ink); }
+.door-title { font-size: var(--step-1); font-weight: 600; }
+.door-sub { font-size: var(--step-s); opacity: 0.85; }
+
+.claims { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.claim { display: grid; grid-template-columns: 4.5rem 1fr; gap: var(--s4); padding: var(--s4) 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.claim-fig { font-size: var(--step-3); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.claim-body { max-width: 58ch; }
+.claim-was { display: block; font-size: var(--step-s); color: var(--ink-faint); }
+
+@media print {
+  .banner, .simbadge, .topbar, .sitefoot, .btn, .toggle, .noprint { display: none !important; }
+  body { background: #fff; color: #000; }
+  .sheet { border-color: #999; }
+}

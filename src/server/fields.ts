@@ -1,6 +1,6 @@
-import type { Cycle, TrackId } from "./types";
-import type { SectionId } from "./config/schemes";
-import { isDemoAadhaar, DEMO_AADHAAR_MESSAGE_HI } from "./otr";
+import type { Case, Cycle, TrackId } from "./types";
+import { SCHEMES, type SectionId } from "./config/schemes";
+import { DEMO_AADHAAR_MESSAGE_HI, isDemoAadhaar } from "./config/aadhaar";
 
 export type FieldSpec = {
   name: string;
@@ -252,3 +252,38 @@ export function fieldsFor(_track: TrackId, _cycle: Cycle, section: SectionId): F
 export function isRequired(spec: FieldSpec, ctx: { track: TrackId; cycle: Cycle }): boolean {
   return spec.requiredWhen ? spec.requiredWhen(ctx) : false;
 }
+
+export function validateField(
+  name: string,
+  value: unknown,
+  form: Record<string, unknown>,
+): string | null {
+  const spec = FIELDS[name];
+  if (!spec) return "अज्ञात फ़ील्ड";
+  if (spec.maxLen && String(value).length > spec.maxLen) return `अधिकतम ${spec.maxLen} अक्षर`;
+  if (spec.options && value !== "" && value !== null && value !== undefined) {
+    if (!spec.options.some((o) => o.value === String(value))) return "सूची में से चुनें";
+  }
+  return spec.validate ? spec.validate(value, form) : null;
+}
+
+export function validateAll(c: Case): { field: string; messageHi: string }[] {
+  const scheme = SCHEMES[c.track];
+  const out: { field: string; messageHi: string }[] = [];
+  for (const spec of Object.values(FIELDS)) {
+    if (!scheme.sections.includes(spec.section)) continue;
+    if (spec.section === "previous_result" && c.cycle !== "renewal" && !scheme.needsMarks) continue;
+    const required = isRequired(spec, { track: c.track, cycle: c.cycle });
+    const value = c.form[spec.name];
+    if (required && (value === undefined || value === null || value === "" || value === false)) {
+      out.push({ field: spec.name, messageHi: `${spec.labelHi} भरना ज़रूरी है` });
+      continue;
+    }
+    if (value !== undefined && value !== null && value !== "") {
+      const msg = validateField(spec.name, value, c.form);
+      if (msg) out.push({ field: spec.name, messageHi: msg });
+    }
+  }
+  return out;
+}
+
