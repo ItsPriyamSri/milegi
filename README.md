@@ -4,6 +4,8 @@ Independent hackathon prototype of a UP Saksham scholarship **case file**. Mock 
 
 The form is intake. The product is `/status/[id]`.
 
+**Live demo:** https://milegi.vercel.app
+
 ## Run
 
     npm install

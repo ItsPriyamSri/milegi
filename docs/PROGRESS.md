@@ -2,7 +2,7 @@
 
 **Shared board for Cursor and Codex.** Specs stay in the plans. This file is the only place that says what is done.
 
-**Now:** Enhancement / submission leftovers — 3-minute video and judge write-up. Phase D build (labels, README, Neon project) is in. Vercel public URL: see board.  
+**Now:** Enhancement — 3-minute video and judge write-up. Student E2E is in. Live: https://milegi.vercel.app  
 **Deadline:** submit 27 Aug 2026.
 
 **Map (locked):** student journey only — not a full UP scholarship website clone. **Look (locked):** independent civic tool — not exam-copy, not NIC navy.
@@ -36,7 +36,7 @@ Plans: [build order](superpowers/plans/2026-08-20-milegi-build-order.md) · [bac
 | [x] | Cursor | Phase C — Task 8 limitations + error.tsx + 360px | civic-tool restyle (no notebook rules) |
 | [x] | Cursor | E2E — Priya + Amit student flow | 20 Aug. Home→door→papers→form→crash recover→lock→case→clerk attest→mock pay. Amit wait stays 12 after ping. 9–10 honest stop. Two OTRs on dup. `/r/NOPE` → `यह कोड नहीं मिला`. `npm test` 22/22, typecheck + build green. |
 | [x] | Cursor | Phase D — save labels + README + Neon | 20 Aug. Phone/sync/saved labels. Judge README. Neon project `little-glade-85479553` (pooled `DATABASE_URL` in `.env.local`, not committed). |
-| [ ] | Cursor | Phase D — Vercel deploy + cold-click | in progress |
+| [x] | Cursor | Phase D — Vercel deploy + cold-click | 20 Aug. https://milegi.vercel.app Neon pooled `DATABASE_URL`. Seed + Priya/Amit/dup + `/r/MLG-PRIYA` + `/r/NOPE`. |
 | [ ] | Cursor | Enhancement — video + write-up | not started |
 
 ---
