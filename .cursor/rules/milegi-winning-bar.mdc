@@ -1,0 +1,14 @@
+---
+description: Re-read Milegi winning bar before UI or product-surface work
+alwaysApply: true
+---
+
+# Milegi winning bar
+
+Before changing `src/app`, `src/components`, or `globals.css`, re-read **Winning bar** in `docs/milegi-plan.md`.
+
+This is a **student scholarship journey**, not a ministry website and not an exam product. Screens: home → door → papers → short form → case page (the product) → clerk hat.
+
+Visual world: **independent civic tool**. Hindi-first, 360px, teal actions, honest prototype banner. Do not clone NIC navy. Do not put back ruled notebook lines or a red margin.
+
+Do not add a chatbot, web fonts, Tailwind, a fee/bank input, or fake Codex usage.
