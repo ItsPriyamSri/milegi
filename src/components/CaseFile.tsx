@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getApp, postAction, type Envelope } from "@/lib/api";
+import { correctionWindow } from "@/lib/calendar";
 import { t } from "@/lib/i18n";
 import { useLang } from "@/lib/useLang";
 import type { Application } from "@/server/types";
@@ -20,6 +21,7 @@ function holderLine(app: Application, lang: "hi" | "en"): string {
       ? `${holder.name}, छात्रवृत्ति क्लर्क, ${app.instituteName}`
       : `${holder.name}, scholarship clerk, ${app.instituteName}`;
   }
+  if (app.status === "dwo") return t(lang, "dwoName");
   return `${holder.name} · ${holder.role}`;
 }
 
@@ -66,6 +68,7 @@ export default function CaseFile({ id }: { id: string }) {
   const early = ["choose", "preflight", "draft", "review"].includes(app.status);
   const waiting = app.actors.some((a) => a.waitingDays > 0);
   const attested = app.status !== "institute";
+  const windowOpen = correctionWindow(app.cycle).open;
 
   if (early) {
     return (
@@ -78,6 +81,16 @@ export default function CaseFile({ id }: { id: string }) {
         <p>
           {t(lang, "resumeCodeIs")}: <strong>{app.resumeCode}</strong>
         </p>
+        {app.otr ? (
+          <p>
+            {t(lang, "otrLabel")}: <span className="code">{app.otr}</span>
+          </p>
+        ) : null}
+        {app.registrationNo ? (
+          <p>
+            {t(lang, "regLabel")}: <span className="code">{app.registrationNo}</span>
+          </p>
+        ) : null}
       </main>
     );
   }
@@ -103,6 +116,7 @@ export default function CaseFile({ id }: { id: string }) {
             : `Hard copy to college by ${app.hardCopyDueAt}`}
         </p>
       ) : null}
+      <p className="lead">{windowOpen ? t(lang, "sanshodhanOpen") : t(lang, "sanshodhanClosed")}</p>
 
       <h2>{t(lang, "feeLabel")}</h2>
       <p className="money">{rupees(app.expectedAmount)}</p>
@@ -135,14 +149,14 @@ export default function CaseFile({ id }: { id: string }) {
         </a>
       ) : null}
       {app.status === "dwo" ? (
-        <>
-          <button type="button" className="primary" disabled={busy} onClick={() => void act("pay")}>
-            {t(lang, "pay")}
-          </button>
-          <button type="button" className="danger" disabled={busy} onClick={() => void act("reject")}>
-            {t(lang, "reject")}
-          </button>
-        </>
+        <a className="btn" href={`/dwo/${id}`}>
+          {t(lang, "dwoHat")}
+        </a>
+      ) : null}
+      {["institute", "dwo", "paid", "rejected"].includes(app.status) ? (
+        <a className="btn quiet" href={`/sanshodhan/${id}`}>
+          {t(lang, "sanshodhan")}
+        </a>
       ) : null}
       {app.status === "rejected" ? (
         <a className="btn" href={`/apply/${id}`}>
@@ -153,6 +167,16 @@ export default function CaseFile({ id }: { id: string }) {
       <p>
         {t(lang, "resumeCodeIs")}: <strong>{app.resumeCode}</strong>
       </p>
+      {app.otr ? (
+        <p>
+          {t(lang, "otrLabel")}: <span className="code">{app.otr}</span>
+        </p>
+      ) : null}
+      {app.registrationNo ? (
+        <p>
+          {t(lang, "regLabel")}: <span className="code">{app.registrationNo}</span>
+        </p>
+      ) : null}
 
       <hr className="rule" />
       <h2>{t(lang, "chain")}</h2>

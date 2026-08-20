@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { ApiError, feeDispute, postAction, type Envelope } from "@/lib/api";
 import { useAutosave } from "@/lib/useAutosave";
@@ -36,7 +37,8 @@ function FeePanel({
       <p>
         {lang === "hi" ? "कोर्स" : "Course"}: {app.courseName} · {app.instituteName}
       </p>
-      <p>OTR: <span className="code">{app.otr}</span></p>
+      <p>{t(lang, "otrLabel")}: <span className="code">{app.otr}</span></p>
+      <p>{t(lang, "regLabel")}: <span className="code">{app.registrationNo}</span></p>
       <label htmlFor="dispute">{t(lang, "feeDispute")}</label>
       <input id="dispute" value={note} onChange={(e) => setNote(e.target.value)} />
       <button
@@ -65,8 +67,8 @@ export default function FormStep({
   lang: Lang;
   onEnv: (env: Envelope) => void;
 }) {
+  const router = useRouter();
   const { update, flush, dirty, saveKey } = useAutosave(id);
-  const [tab, setTab] = useState(0);
   const [crash, setCrash] = useState(false);
   const [crashMsg, setCrashMsg] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -74,25 +76,29 @@ export default function FormStep({
 
   const merged = { ...app, ...dirty };
   const fresh = app.cycle === "fresh";
-  const tabs = fresh
-    ? ([t(lang, "academic"), t(lang, "personal"), t(lang, "feeSection")] as const)
-    : ([t(lang, "resultTab"), t(lang, "feeSection")] as const);
-  const last = tabs.length - 1;
+  const saveLine = saveKey ? t(lang, saveKey) : null;
 
-  async function goReview() {
+  async function finish() {
     setBusy(true);
     setErr(null);
     await flush();
     try {
-      onEnv(await postAction(id, "review"));
+      if (app.status !== "review") {
+        onEnv(await postAction(id, "review"));
+      }
+      if (!window.confirm(t(lang, "lockConfirm"))) {
+        setBusy(false);
+        return;
+      }
+      onEnv(await postAction(id, "lock"));
+      router.push(`/status/${id}`);
     } catch (cause) {
       if (cause instanceof ApiError) {
         const list = cause.body.blockers ?? [];
         setErr(list.map((b) => (lang === "hi" ? b.hi : b.en)).join(" ") || cause.message);
       } else {
-        setErr(cause instanceof Error ? cause.message : "review failed");
+        setErr(cause instanceof Error ? cause.message : "lock failed");
       }
-    } finally {
       setBusy(false);
     }
   }
@@ -109,30 +115,15 @@ export default function FormStep({
     }
   }
 
-  const saveLine = saveKey ? t(lang, saveKey) : null;
-
   return (
     <>
       {crash ? (
         <CrashOverlay message={crashMsg} onReload={() => window.location.reload()} />
       ) : null}
-      <div className="tabs" role="tablist">
-        {tabs.map((label, i) => (
-          <button
-            key={label}
-            type="button"
-            role="tab"
-            aria-selected={tab === i}
-            className={tab === i ? "on" : undefined}
-            onClick={() => setTab(i)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
 
-      {fresh && tab === 0 ? (
+      {fresh ? (
         <>
+          <h2>{t(lang, "academic")}</h2>
           <label htmlFor="year">{t(lang, "year")}</label>
           <input
             id="year"
@@ -142,11 +133,8 @@ export default function FormStep({
             onChange={(e) => update({ yearOfStudy: Number(e.target.value) })}
           />
           <p>{merged.courseName} · {merged.instituteName}</p>
-        </>
-      ) : null}
 
-      {fresh && tab === 1 ? (
-        <>
+          <h2>{t(lang, "personal")}</h2>
           <label className="tick">
             <input
               type="checkbox"
@@ -202,10 +190,9 @@ export default function FormStep({
             {t(lang, "photo")}
           </label>
         </>
-      ) : null}
-
-      {!fresh && tab === 0 ? (
+      ) : (
         <>
+          <h2>{t(lang, "resultTab")}</h2>
           <label htmlFor="result">{t(lang, "resultTab")}</label>
           <select
             id="result"
@@ -239,39 +226,25 @@ export default function FormStep({
             {t(lang, "semesterCombined")}
           </label>
         </>
-      ) : null}
+      )}
 
-      {tab === last ? (
+      {missing.length ? (
         <>
-          {missing.length ? (
-            <>
-              <h2>{t(lang, "leftover")}</h2>
-              {missing.map((b) => (
-                <p key={b.code} className="err">{lang === "hi" ? b.hi : b.en}</p>
-              ))}
-            </>
-          ) : null}
-          <FeePanel app={merged} institute={institute} lang={lang} id={id} />
+          <h2>{t(lang, "leftover")}</h2>
+          {missing.map((b) => (
+            <p key={b.code} className="err">{lang === "hi" ? b.hi : b.en}</p>
+          ))}
         </>
       ) : null}
+
+      <FeePanel app={merged} institute={institute} lang={lang} id={id} />
 
       {saveLine ? <p className="save">{saveLine}</p> : null}
       {err ? <p className="err">{err}</p> : null}
 
-      {tab < last ? (
-        <button type="button" className="primary" onClick={() => setTab(tab + 1)}>
-          {t(lang, "next")}
-        </button>
-      ) : (
-        <button type="button" className="primary" disabled={busy} onClick={() => void goReview()}>
-          {t(lang, "next")}
-        </button>
-      )}
-      {tab > 0 ? (
-        <button type="button" className="quiet" onClick={() => setTab(tab - 1)}>
-          {t(lang, "back")}
-        </button>
-      ) : null}
+      <button type="button" className="primary" disabled={busy} onClick={() => void finish()}>
+        {t(lang, "lock")}
+      </button>
       <button type="button" className="danger" onClick={() => void boom()}>
         {t(lang, "crash")}
       </button>

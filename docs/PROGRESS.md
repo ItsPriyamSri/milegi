@@ -2,16 +2,16 @@
 
 **Shared board for Cursor and Codex.** Specs stay in the plans. This file is the only place that says what is done.
 
-**Now:** Enhancement — 3-minute video and judge write-up. Student E2E is in. Live: https://milegi.vercel.app  
+**Now:** Waves 1–5 code in. Remaining: record the 3-minute video; `POST /api/seed` on production after deploy. Live: https://milegi.vercel.app  
 **Deadline:** submit 27 Aug 2026.
 
-**Map (locked):** student journey only — not a full UP scholarship website clone. **Look (locked):** independent civic tool — not exam-copy, not NIC navy.
+**Map:** public hub + student journey. Completable: Dashmottar Fresh + Renewal. Stubs for official menus we will not fake. **Look (locked):** independent civic tool — not exam-copy, not NIC navy.
 
 **Winning bar:** [milegi-plan.md — Winning bar](milegi-plan.md#winning-bar-re-read-before-every-ui-change)
 
 How to update: tick `[x]`, set **Now** to the next open row, one-line note if something failed. Do not rewrite the plans here.
 
-Plans: [build order](superpowers/plans/2026-08-20-milegi-build-order.md) · [backend](superpowers/plans/2026-08-19-milegi-backend.md) · [frontend](superpowers/plans/2026-08-19-milegi-frontend.md)
+Plans: [enhancement](superpowers/plans/2026-08-20-milegi-enhancement.md) · [build order](superpowers/plans/2026-08-20-milegi-build-order.md) · [backend](superpowers/plans/2026-08-19-milegi-backend.md) · [frontend](superpowers/plans/2026-08-19-milegi-frontend.md)
 
 ---
 
@@ -37,7 +37,9 @@ Plans: [build order](superpowers/plans/2026-08-20-milegi-build-order.md) · [bac
 | [x] | Cursor | E2E — Priya + Amit student flow | 20 Aug. Home→door→papers→form→crash recover→lock→case→clerk attest→mock pay. Amit wait stays 12 after ping. 9–10 honest stop. Two OTRs on dup. `/r/NOPE` → `यह कोड नहीं मिला`. `npm test` 22/22, typecheck + build green. |
 | [x] | Cursor | Phase D — save labels + README + Neon | 20 Aug. Phone/sync/saved labels. Judge README. Neon project `little-glade-85479553` (pooled `DATABASE_URL` in `.env.local`, not committed). |
 | [x] | Cursor | Phase D — Vercel deploy + cold-click | 20 Aug. https://milegi.vercel.app Neon pooled `DATABASE_URL`. Seed + Priya/Amit/dup + `/r/MLG-PRIYA` + `/r/NOPE`. |
-| [ ] | Cursor | Enhancement — video + write-up | not started |
+| [x] | Cursor | Enhancement Wave 1 — hub + one-page form + OTR shape | 20 Aug. Nav/back/stubs. Form is one scroll + lock. OTR `UP26-##########`. Resume by OTR or 15-digit registration. Production needs `POST /api/seed` to refresh old `OTR-DEMO-*` rows. |
+| [x] | Cursor | Enhancement Waves 2–5 | 20 Aug. Live hub status. Sanshodhan refuses with GO dates. School door names login + class-10 recovery. DWO hat. `docs/WRITEUP.md` + `docs/VIDEO.md`. `npm test` 26/26. |
+| [ ] | you | Record 3-minute video | shot list: `docs/VIDEO.md` |
 
 ---
 

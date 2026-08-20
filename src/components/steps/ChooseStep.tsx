@@ -65,6 +65,16 @@ export default function ChooseStep({
             ))}
           </ul>
         ) : null}
+        {!door.completable ? (
+          <>
+            <p className="lead">{t(lang, "recoverHow")}</p>
+            <ul>
+              <li>{t(lang, "recoverBoard")}</li>
+              <li>{t(lang, "recoverYear")}</li>
+              <li>{t(lang, "recoverRoll")}</li>
+            </ul>
+          </>
+        ) : null}
         {door.completable && door.appId ? (
           <button type="button" className="primary" disabled={busy} onClick={() => void openCase(door.appId!)}>
             {t(lang, "openCase")}

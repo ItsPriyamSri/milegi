@@ -10,7 +10,6 @@ import type { Application, Blocker, Institute } from "@/server/types";
 import ChooseStep from "@/components/steps/ChooseStep";
 import PreflightStep from "@/components/steps/PreflightStep";
 import FormStep from "@/components/steps/FormStep";
-import ReviewStep from "@/components/steps/ReviewStep";
 
 const TERMINAL = new Set(["institute", "dwo", "paid", "rejected"]);
 
@@ -88,13 +87,12 @@ export default function Wizard({ id }: { id: string }) {
     );
   }
 
-  const progress =
-    app.status === "choose" ? 0 : app.status === "preflight" ? 1 : app.status === "draft" ? 2 : 3;
+  const progress = app.status === "choose" ? 0 : app.status === "preflight" ? 1 : 2;
 
   return (
     <main>
-      <div className="progress" aria-label={`${progress + 1} / 6`}>
-        {Array.from({ length: 6 }, (_, index) => (
+      <div className="progress" aria-label={`${progress + 1} / 3`}>
+        {Array.from({ length: 3 }, (_, index) => (
           <span className={index <= progress ? "on" : undefined} key={index} />
         ))}
       </div>
@@ -113,11 +111,8 @@ export default function Wizard({ id }: { id: string }) {
           onEnv={apply}
         />
       ) : null}
-      {app.status === "draft" ? (
+      {app.status === "draft" || app.status === "review" ? (
         <FormStep id={id} app={app} missing={missing} institute={institute} lang={lang} onEnv={apply} />
-      ) : null}
-      {app.status === "review" ? (
-        <ReviewStep id={id} app={app} institute={institute} lang={lang} onEnv={apply} />
       ) : null}
     </main>
   );

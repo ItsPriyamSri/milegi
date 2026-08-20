@@ -39,12 +39,16 @@ const ITEMS: { hi: string; en: string }[] = [
     en: "Attendance is assumed 80% on attest; the real rule is 75% minimum",
   },
   {
-    hi: "लॉक के बाद बदलाव सिर्फ़ विभाग की संशोधन विंडो में — यह प्रोटोटाइप वह विंडो नहीं बनाता",
-    en: "After lock, changes only in the department correction window — this prototype does not build that window",
+    hi: "लॉक के बाद संशोधन सिर्फ़ विभाग की विंडो में — दशमोत्तर नवीनीकरण 21 नवम्बर–20 दिसम्बर 2026, Fresh 16 दिसम्बर 2026–10 जनवरी 2027। बटन दबाओ तो प्रोटोटाइप मना करता है",
+    en: "After lock, correction only in the department window — Dashmottar renewal 21 Nov–20 Dec 2026, fresh 16 Dec 2026–10 Jan 2027. The prototype refuses if you ask outside it",
   },
   {
-    hi: "कोई भी व्यक्ति जिसके पास MLG- कोड है, वह केस खोल सकता है। डेमो के लिए जानबूझकर — इसमें असली डेटा नहीं है",
-    en: "Anyone with an MLG- code can open that case. Deliberate for the demo — there is no real data here",
+    hi: "कोई भी व्यक्ति जिसके पास MLG- कोड, OTR (UP26- और दस अंक), या 15 अंकों वाला रजिस्ट्रेशन नंबर है, वह केस खोल सकता है। डेमो के लिए जानबूझकर — इसमें असली डेटा नहीं है",
+    en: "Anyone with an MLG- code, an OTR (UP26- plus ten digits), or a 15-digit registration number can open that case. Deliberate for the demo — there is no real data here",
+  },
+  {
+    hi: "होम पर योजनाएँ / परिपत्र / शिकायत लिंक हैं क्योंकि असली साइट पर भी हैं — यहाँ वे ईमानदार स्टब हैं, नकली सरकारी पोर्टल नहीं",
+    en: "Home links Schemes / Circulars / Grievance because the official site does — here they are honest stubs, not a fake government portal",
   },
   {
     hi: "Codex (ChatGPT Go) ने शेल और विज़ार्ड होस्ट लिखा; बाकी इनटेक UI, केस पेज, डोमेन लॉजिक और API Cursor में लिखे गए — Go कोटा Task 2 के बाद ख़त्म हो गया",

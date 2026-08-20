@@ -22,7 +22,10 @@ import {
   resolveDoor,
   retryNpci,
   reviewGaps,
+  tryCorrect,
 } from "./logic";
+import { correctionWindow } from "@/lib/calendar";
+import { AMIT_OTR } from "@/lib/demoCodes";
 import { getApp, getAppByResume, getInstitute, resetSeed, saveApp } from "./store";
 
 test("lock only from review", () => {
@@ -64,6 +67,19 @@ test("seeded Priya is loadable and blocked-by-design", () => {
 test("resume code is case-insensitive", () => {
   isoStore();
   assert.equal(getAppByResume("  mlg-amit ").id, "app-amit");
+});
+
+test("KYC mints an official-shaped OTR", () => {
+  isoStore();
+  const otr = completeKyc("app-priya").otr;
+  assert.match(otr ?? "", /^UP26-\d{10}$/);
+});
+
+test("resume lookup accepts OTR and 15-digit registration", () => {
+  isoStore();
+  assert.equal(getAppByResume(AMIT_OTR.toLowerCase()).id, "app-amit");
+  assert.equal(getAppByResume("UP262713703025").id, "app-amit");
+  assert.equal(getAppByResume(getApp("app-amit").registrationNo ?? "").id, "app-amit");
 });
 
 test("institute master carries the excluded charges", () => {
@@ -230,6 +246,12 @@ test("the door never returns not-found", () => {
   assert.equal(school.completable, false);
   assert.equal(school.appId, null);
   assert.equal(school.alt?.appId, "app-priya"); // "continue as college"
+  assert.match(school.messageHi, /हाई स्कूल/);
+  assert.match(school.messageHi, /Pre-Matric Fresh/);
+
+  const inter = resolveDoor({ studying: "11-12", firstYear: false, gotLastYear: "yes" });
+  assert.equal(inter.completable, false);
+  assert.match(inter.messageHi, /Post-Matric Inter Renewal/);
 
   const amit = resolveDoor({ studying: "college", firstYear: false, gotLastYear: "yes" });
   assert.equal(amit.appId, "app-amit");
@@ -242,6 +264,32 @@ test("the door never returns not-found", () => {
 
   const fresh = resolveDoor({ studying: "college", firstYear: true, gotLastYear: "no" });
   assert.equal(fresh.appId, "app-priya");
+});
+
+test("Dashmottar correction window is closed on 20 Aug 2026", () => {
+  assert.equal(correctionWindow("fresh", new Date("2026-08-20T00:00:00.000Z")).open, false);
+  assert.equal(correctionWindow("renewal", new Date("2026-08-20T00:00:00.000Z")).end, "2026-12-20");
+  assert.equal(correctionWindow("renewal", new Date("2026-12-01T00:00:00.000Z")).open, true);
+  assert.equal(correctionWindow("fresh", new Date("2026-12-20T00:00:00.000Z")).open, true);
+});
+
+test("sanshodhan refuses outside the window", () => {
+  isoStore();
+  assert.throws(
+    () => tryCorrect("app-priya"),
+    (err: unknown) => err instanceof Error && (err as Error & { code?: string }).code === "not_locked",
+  );
+  clearPriyaGates();
+  moveToReview("app-priya");
+  lock("app-priya");
+  assert.throws(
+    () => tryCorrect("app-priya", new Date("2026-08-20T00:00:00.000Z")),
+    (err: unknown) => err instanceof Error && (err as Error & { code?: string }).code === "correction_closed",
+  );
+  assert.throws(
+    () => tryCorrect("app-priya", new Date("2026-12-20T00:00:00.000Z")),
+    (err: unknown) => err instanceof Error && (err as Error & { code?: string }).code === "correction_not_built",
+  );
 });
 
 test("'don't know' does not silently open a Fresh case for a renewal student", () => {

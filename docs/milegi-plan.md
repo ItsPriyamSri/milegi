@@ -7,6 +7,7 @@ The student's job is not “submit the form.” It is: **will the money arrive, 
 Implementation:
 
 - Progress (Cursor + Codex): `docs/PROGRESS.md`
+- Enhancement (hub, one-page form, official OTR shape): `docs/superpowers/plans/2026-08-20-milegi-enhancement.md`
 - Who builds what: `docs/superpowers/plans/2026-08-20-milegi-build-order.md`
 - Backend: `docs/superpowers/plans/2026-08-19-milegi-backend.md`
 - Frontend: `docs/superpowers/plans/2026-08-19-milegi-frontend.md`
@@ -28,6 +29,8 @@ The brief’s hammer: **a cleaner screen over the same broken process is not a f
 A viewport is not done until it answers **one student question above the fold in Hindi** (which login am I, which paper is blocking me, will the draft survive, where is the file, what do I do by when, how much — as an estimate). If we stripped the persona names and the screen still felt like a form dump, it is not done.
 
 Stay inside the civic-tool world. Do not add a second aesthetic to “look impressive.” Impressive here is: short, named, honest, finishable. Do not add a chatbot, extra languages, badges, web fonts, a fee box, or bank/IFSC fields.
+
+The public hub may look like a student dashboard (cases, resume by OTR/registration, links to schemes/circulars/grievance) **without cloning NIC chrome**. Those extra menus are honest stubs unless a later wave completes them. Scope is not capped at seven days of Dashmottar-only work.
 
 **Codex:** ChatGPT Go wrote the shell and the wizard host (frontend Tasks 1–2), then quota ended. Cursor finishes the remaining intake UI. The submission write-up must say that split. Do not fake Codex usage.
 
@@ -70,9 +73,9 @@ School (9–12) login opened 11 Aug 2026. **Dashmottar (degree/diploma/ITI) open
 
 ---
 
-## Demo scope (this week)
+## Demo scope
 
-**Completable journeys: Dashmottar Fresh (Priya) and Dashmottar Renewal (Amit) only.**
+**Completable journeys: Dashmottar Fresh (Priya) and Dashmottar Renewal (Amit).** Agents can keep building beyond a one-week ceiling (hub, more tracks as honest stops, richer case dashboard). The hackathon video still has to finish Priya and Amit.
 
 The door still asks what you study, so the eight-login pain is visible. If the answer is class 9–12 or outside state, the page says this prototype continues as college (Dashmottar) and does **not** fake a school form. `/limitations` states that out loud.
 
@@ -101,7 +104,7 @@ Do **not** add: chatbot, LLM eligibility, OCR, eight wizard copies, DWO/district
 
 ## Case page (the product)
 
-One URL, reopenable with a resume code (`MLG-PRIYA`) plus this phone's saved copy:
+One URL, reopenable with a resume code (`MLG-PRIYA`), the official-shaped OTR (`UP26-##########`), or the 15-digit session registration number, plus this phone's saved copy:
 
 - Where the file is
 - Who holds it **by name**
@@ -133,9 +136,11 @@ The resolver decides from those three answers alone — there is no identity inp
 
 ## Short form (Dashmottar)
 
-**Fresh, after pre-flight:** course (read-only from the institute), year, day scholar, ration card (`0` is fine), enrollment number, counseling + number if yes, bonafide tick, photo tick. **No fee input. No bank. No district.**
+**One scrolling page** after papers — not शैक्षिक / निजी / शुल्क tabs. The official multi-step form is the failure we beat.
 
-**Renewal:** result, marks obtained/total, both-semesters tick. Course and fee read-only.
+**Fresh, after pre-flight:** course (read-only from the institute), year, day scholar, ration card (`0` is fine), enrollment number, counseling + number if yes, bonafide tick, photo tick. **No fee input. No bank. No district.** Lock sits at the bottom of the same page.
+
+**Renewal:** result, marks obtained/total, both-semesters tick. Course and fee read-only. Same page, same lock.
 
 Fee panel (both): tuition from master data, with hostel/mess/caution struck through and one Hindi sentence. Button: “रसीद मेल नहीं खाती” → `feeDispute`, allowed right up to the DWO stage, because that mismatch usually surfaces when the clerk compares papers.
 
@@ -149,9 +154,9 @@ Fee panel (both): tuition from master data, with hostel/mess/caution struck thro
 
 ## Personas
 
-- **Priya** (`app-priya`, resume `MLG-PRIYA`) — Fresh Dashmottar, B.A. 1st year, CSJMU Kanpur. Expired income certificate, NPCI timeout, crash, recover, lock, clerk attest, paid. Tuition ₹8,500.
-- **Amit** (`app-amit`, resume `MLG-AMIT`) — Renewal Dashmottar, B.Sc. 2nd year. Prefilled. Clerk waiting 12 days. Nudge. Tuition ₹19,800, last year ₹18,500 shown.
-- **Amit गलत Fresh** (`app-amit-dup`, resume `MLG-DUP`) — same Aadhaar token, a second OTR minted. The door must recover, not die.
+- **Priya** (`app-priya`, resume `MLG-PRIYA`) — Fresh Dashmottar, B.A. 1st year, CSJMU Kanpur. Expired income certificate, NPCI timeout, crash, recover, lock, clerk attest, paid. Tuition ₹8,500. OTR minted on KYC as `UP26-` + 10 digits.
+- **Amit** (`app-amit`, resume `MLG-AMIT`, OTR `UP26-2713703025`) — Renewal Dashmottar, B.Sc. 2nd year. Prefilled. Clerk waiting 12 days. Nudge. Tuition ₹19,800, last year ₹18,500 shown.
+- **Amit गलत Fresh** (`app-amit-dup`, resume `MLG-DUP`, OTR `UP26-3141592654`) — same Aadhaar token, a second OTR minted. The door must recover, not die.
 
 Income caps (Dashmottar / Post-Matric): SC/ST ₹2,50,000; General, OBC and Minority ₹2,00,000. Certificate valid 3 years. Pre-matric caps are deliberately not modelled — public 2026-27 sources disagree, and class 9–10 is not a completable journey here.
 
@@ -161,7 +166,7 @@ Income caps (Dashmottar / Post-Matric): SC/ST ₹2,50,000; General, OBC and Mino
 
 Visitor: cheap Android, Hindi, often 11pm, two bars. **Independent civic tool** — not a clone of `scholarship.up.gov.in`, not lined exam paper. System font stack, **no web font download**. Banner on every screen: `स्वतंत्र हैकथॉन प्रोटोटाइप · नकली डेटा · सरकारी वेबसाइट नहीं`
 
-Product map (locked 20 Aug): **student journey only**. Home (start/resume) → one door → papers → short form → **case page (the product / dashboard)** → clerk hat for the demo. No schemes index, circulars, institute portal, or DWO dashboard.
+Product map: public hub (`/` live case status + OTR/registration resume) with linked schemes / circulars (GO dates) / grievance stubs, then student journey — one door → papers → **one form** → **case page** → clerk hat → DWO hat. Sanshodhan is a named window that refuses outside it. Broader plan: `docs/superpowers/plans/2026-08-20-milegi-enhancement.md`.
 
 Craft bar lives in **Winning bar** above. Tokens live in `src/app/globals.css`.
 

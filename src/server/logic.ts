@@ -1,3 +1,4 @@
+import { correctionWindow } from "@/lib/calendar";
 import type {
   Application,
   ApplicationStatus,
@@ -12,6 +13,7 @@ import {
   getApp,
   getAppByResume,
   getInstitute,
+  mintOtr,
   saveApp,
   sessionReg,
 } from "./store";
@@ -60,13 +62,17 @@ export function jsonError(err: unknown) {
     err instanceof Error && "status" in err && typeof err.status === "number"
       ? err.status
       : 400;
-  const blockers =
-    err instanceof Error && "blockers" in err
-      ? (err as Error & { blockers?: Blocker[] }).blockers
-      : undefined;
+  const extra = err as { blockers?: Blocker[]; code?: string; window?: unknown };
   return {
     status,
-    body: { ok: false as const, prototype: true as const, error: message, blockers },
+    body: {
+      ok: false as const,
+      prototype: true as const,
+      error: message,
+      blockers: extra.blockers,
+      code: extra.code,
+      window: extra.window,
+    },
   };
 }
 
@@ -211,7 +217,7 @@ export function applyInstituteFees(app: Application): Application {
 export function completeKyc(id: string): Application {
   const app = getApp(id);
   if (app.otr) return app; // never mint a second OTR
-  app.otr = `OTR-DEMO-${id}`;
+  app.otr = mintOtr(id);
   app.registrationNo = sessionReg(id);
   app.lastSavedAt = new Date().toISOString();
   return saveApp(app);
@@ -375,6 +381,23 @@ export function pingClerk(id: string): Application {
   return saveApp(app);
 }
 
+/** Sanshodhan: named window, never a silent edit after lock. Always throws — the product is the refusal. */
+export function tryCorrect(id: string, now = new Date()): Application {
+  const app = getApp(id);
+  if (["choose", "preflight", "draft", "review"].includes(app.status)) {
+    throw Object.assign(new Error("not_locked"), { status: 409, code: "not_locked" });
+  }
+  const w = correctionWindow(app.cycle, now);
+  if (!w.open) {
+    throw Object.assign(new Error("correction_closed"), { status: 409, code: "correction_closed", window: w });
+  }
+  throw Object.assign(new Error("correction_not_built"), {
+    status: 409,
+    code: "correction_not_built",
+    window: w,
+  });
+}
+
 export function raiseFeeDispute(id: string, note: string): Application {
   const app = getApp(id);
   if (!["draft", "review", "institute"].includes(app.status)) {
@@ -437,6 +460,24 @@ export function resolveDoor(input: DoorInput): DoorResult {
   if (input.studying !== "college") {
     const track: Track =
       input.studying === "9-10" ? "prematric" : input.studying === "11-12" ? "inter" : "outside_state";
+    const school = input.studying !== "outside";
+    const loginHi =
+      track === "prematric"
+        ? cycle === "fresh"
+          ? "Pre-Matric Fresh"
+          : "Pre-Matric Renewal"
+        : track === "inter"
+          ? cycle === "fresh"
+            ? "Post-Matric Inter Fresh"
+            : "Post-Matric Inter Renewal"
+          : cycle === "fresh"
+            ? "Outside State Fresh"
+            : "Outside State Renewal";
+    const datesHi = school
+      ? cycle === "fresh"
+        ? "11 अगस्त–21 सितम्बर 2026"
+        : "11–25 अगस्त 2026"
+      : "दशमोत्तर कैलेंडर (15 सितम्बर से)";
     return {
       completable: false,
       track,
@@ -445,8 +486,8 @@ export function resolveDoor(input: DoorInput): DoorResult {
       resumeCode: null,
       otrs: [],
       alt: altFor("app-priya", "कॉलेज (दशमोत्तर) के रूप में जारी रखें", "Continue as college (Dashmottar)"),
-      messageHi: SCOPE_HI,
-      messageEn: SCOPE_EN,
+      messageHi: `${loginHi} · ${datesHi}। खोया रजिस्ट्रेशन हाई स्कूल बोर्ड, पास वर्ष और रोल नंबर से निकलता है — नया OTR मत बनाइए। ${SCOPE_HI}`,
+      messageEn: `${loginHi}, ${datesHi}. Recover the 15-digit registration with class-10 board, pass year and roll number — do not mint a second OTR. ${SCOPE_EN}`,
     };
   }
 

@@ -13,6 +13,7 @@ import {
   raiseFeeDispute,
   reject,
   retryNpci,
+  tryCorrect,
 } from "@/server/logic";
 import { getApp, hydrate, persist } from "@/server/store";
 import type { Application } from "@/server/types";
@@ -38,6 +39,7 @@ export async function POST(
     else if (action === "pay") app = pay(id);
     else if (action === "reject") app = reject(id);
     else if (action === "ping") app = pingClerk(id);
+    else if (action === "correct") app = tryCorrect(id);
     else if (action === "fee-dispute") {
       const body = (await req.json().catch(() => ({}))) as { note?: string };
       app = raiseFeeDispute(id, body.note ?? "रसीद मेल नहीं खाती");

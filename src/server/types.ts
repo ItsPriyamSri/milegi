@@ -59,7 +59,7 @@ export type Application = {
   studentName: string;
   fatherName: string;
   motherName: string;
-  /** Lifetime one-time registration. Mock shape, never a real OTR. */
+  /** Lifetime OTR. Official shape `UPyy-##########`. Synthetic only. */
   otr: string | null;
   /** Session registration number, 15 digits. Different thing from the OTR. */
   registrationNo: string | null;

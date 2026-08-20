@@ -1,7 +1,10 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { AMIT_OTR, DUP_OTR, mintOtr, normalizeResume } from "@/lib/demoCodes";
 import type { Application, Institute } from "./types";
+
+export { AMIT_OTR, DUP_OTR, mintOtr, normalizeResume };
 
 type Snapshot = {
   apps: Application[];
@@ -73,8 +76,13 @@ export function findByAadhaarToken(token: string, exceptId?: string): Applicatio
 }
 
 export function getAppByResume(code: string): Application {
-  const needle = code.trim().toUpperCase();
-  const app = mem().apps.find((a) => a.resumeCode.toUpperCase() === needle);
+  const needle = normalizeResume(code);
+  const app = mem().apps.find((a) => {
+    if (normalizeResume(a.resumeCode) === needle) return true;
+    if (a.otr && normalizeResume(a.otr) === needle) return true;
+    if (a.registrationNo && a.registrationNo === needle) return true;
+    return false;
+  });
   if (!app) throw Object.assign(new Error("unknown_resume"), { status: 404 });
   return app;
 }
@@ -200,7 +208,7 @@ export function amit(): Application {
     studentName: "अमित यादव",
     fatherName: "सुरेश यादव",
     motherName: "गीता यादव",
-    otr: "OTR-DEMO-AMIT",
+    otr: AMIT_OTR,
     registrationNo: sessionReg("app-amit"),
     aadhaarToken: "AADHAAR-DEMO-AMIT",
     mobileMasked: "******4411",
@@ -236,12 +244,12 @@ export function amitDup(): Application {
     studentName: "अमित (गलत Fresh)",
     aadhaarToken: "AADHAAR-DEMO-AMIT",
     cycle: "fresh",
-    otr: "OTR-DEMO-DUP",
+    otr: DUP_OTR,
     registrationNo: sessionReg("app-amit-dup"),
     instituteId: "inst-csjmu-bsc",
     incomeIssuedOn: yearsAgo(1),
     npci: "ok",
-    duplicateOtrs: ["OTR-DEMO-AMIT", "OTR-DEMO-DUP"],
+    duplicateOtrs: [AMIT_OTR, DUP_OTR],
   };
 }
 

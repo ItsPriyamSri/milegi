@@ -15,7 +15,14 @@ export type Envelope = {
 };
 
 /** Error bodies carry `error` and sometimes `blockers`, never a full app. */
-export type ErrorBody = { ok: false; prototype: true; error: string; blockers?: Blocker[] };
+export type ErrorBody = {
+  ok: false;
+  prototype: true;
+  error: string;
+  blockers?: Blocker[];
+  code?: string;
+  window?: { open: boolean; start: string; end: string };
+};
 
 export type DoorAlt = {
   appId: string;
