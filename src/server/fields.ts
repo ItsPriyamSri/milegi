@@ -1,0 +1,254 @@
+import type { Cycle, TrackId } from "./types";
+import type { SectionId } from "./config/schemes";
+import { isDemoAadhaar, DEMO_AADHAAR_MESSAGE_HI } from "./otr";
+
+export type FieldSpec = {
+  name: string;
+  labelHi: string;
+  labelEn: string;
+  hintHi?: string;
+  type: "text" | "number" | "date" | "select" | "checkbox" | "tel";
+  section: SectionId;
+  options?: { value: string; hi: string; en: string }[];
+  requiredWhen?: (ctx: { track: TrackId; cycle: Cycle }) => boolean;
+  maxLen?: number;
+  /** Comes from a verified source (Aadhaar, master data, last year) — never patchable by a student. */
+  readOnly?: boolean;
+  validate?: (value: unknown, form: Record<string, unknown>) => string | null;
+};
+
+const always = () => true;
+
+export const FIELDS: Record<string, FieldSpec> = {
+  // identity — read-only, from the OTR profile
+  aadhaarDemo: {
+    name: "aadhaarDemo",
+    labelHi: "डेमो आधार संख्या",
+    labelEn: "Demo Aadhaar number",
+    hintHi: "0000 से शुरू होने वाला 12 अंकों का डेमो नंबर — असली आधार यहाँ काम नहीं करेगा",
+    type: "text",
+    section: "identity",
+    maxLen: 12,
+    readOnly: true,
+    validate: (v) => (isDemoAadhaar(String(v)) ? null : DEMO_AADHAAR_MESSAGE_HI),
+  },
+  districtCode: {
+    name: "districtCode",
+    labelHi: "जिला",
+    labelEn: "District",
+    type: "text",
+    section: "identity",
+    readOnly: true,
+  },
+
+  // education
+  courseType: {
+    name: "courseType",
+    labelHi: "पाठ्यक्रम का प्रकार",
+    labelEn: "Course type",
+    type: "select",
+    section: "education",
+    options: [
+      { value: "regular", hi: "नियमित", en: "Regular" },
+      { value: "self", hi: "स्वयं-वित्तपोषित", en: "Self-financed" },
+    ],
+    requiredWhen: always,
+  },
+  yearOfStudy: {
+    name: "yearOfStudy",
+    labelHi: "अध्ययन का वर्ष",
+    labelEn: "Year of study",
+    type: "number",
+    section: "education",
+    requiredWhen: always,
+    validate: (v) => (Number(v) >= 1 && Number(v) <= 6 ? null : "वर्ष 1 से 6 के बीच होना चाहिए"),
+  },
+  admissionDate: {
+    name: "admissionDate",
+    labelHi: "प्रवेश की तिथि",
+    labelEn: "Admission date",
+    type: "date",
+    section: "education",
+    requiredWhen: always,
+  },
+  hosteller: {
+    name: "hosteller",
+    labelHi: "आवासीय छात्र (छात्रावास में रहते हैं)",
+    labelEn: "Hosteller",
+    hintHi: "रखरखाव भत्ता इसी से तय होता है",
+    type: "checkbox",
+    section: "education",
+  },
+  boardName: {
+    name: "boardName",
+    labelHi: "हाई स्कूल बोर्ड",
+    labelEn: "High-school board",
+    type: "select",
+    section: "education",
+    options: [
+      { value: "upmsp", hi: "यू.पी. बोर्ड", en: "UP Board" },
+      { value: "cbse", hi: "सी.बी.एस.ई.", en: "CBSE" },
+      { value: "icse", hi: "आई.सी.एस.ई.", en: "ICSE" },
+    ],
+    requiredWhen: always,
+  },
+  boardRollNo: {
+    name: "boardRollNo",
+    labelHi: "हाई स्कूल रोल नंबर",
+    labelEn: "High-school roll number",
+    hintHi: "मार्कशीट पर जैसा छपा है वैसा ही — यही नंबर बोर्ड डेटाबेस से मिलाया जाता है",
+    type: "text",
+    section: "education",
+    maxLen: 20,
+    requiredWhen: always,
+  },
+  enrolmentNo: {
+    name: "enrolmentNo",
+    labelHi: "नामांकन संख्या",
+    labelEn: "Enrolment number",
+    hintHi: "कॉलेज की नामांकन पर्ची से — स्पेस या डैश न डालें",
+    type: "text",
+    section: "education",
+    maxLen: 30,
+    requiredWhen: ({ track }) => track === "dashmottar" || track === "outside_state",
+  },
+
+  // previous result
+  resultStatus: {
+    name: "resultStatus",
+    labelHi: "पिछले वर्ष का परिणाम",
+    labelEn: "Previous year result",
+    type: "select",
+    section: "previous_result",
+    options: [
+      { value: "passed", hi: "उत्तीर्ण", en: "Passed" },
+      { value: "promoted", hi: "बैक पेपर के साथ प्रोन्नत", en: "Promoted with back paper" },
+      { value: "failed", hi: "अनुत्तीर्ण", en: "Failed" },
+    ],
+    requiredWhen: ({ cycle }) => cycle === "renewal",
+  },
+  marksObtained: {
+    name: "marksObtained",
+    labelHi: "प्राप्तांक",
+    labelEn: "Marks obtained",
+    type: "number",
+    section: "previous_result",
+    requiredWhen: ({ cycle }) => cycle === "renewal",
+    validate: (v, form) => {
+      const total = Number(form.marksTotal ?? 0);
+      if (total > 0 && Number(v) > total) return "प्राप्तांक कुल अंकों से अधिक नहीं हो सकते";
+      return null;
+    },
+  },
+  marksTotal: {
+    name: "marksTotal",
+    labelHi: "कुल अंक",
+    labelEn: "Marks total",
+    hintHi: "पूरे वर्ष के कुल अंक — CGPA या एक सेमेस्टर के अंक नहीं",
+    type: "number",
+    section: "previous_result",
+    requiredWhen: ({ cycle }) => cycle === "renewal",
+    validate: (v) =>
+      Number(v) > 0 && Number(v) < 50
+        ? "यह CGPA जैसा दिख रहा है। कुल अंक भरें (जैसे 600 या 1200), CGPA नहीं।"
+        : null,
+  },
+  semesterCombined: {
+    name: "semesterCombined",
+    labelHi: "दोनों सेमेस्टर के अंक जोड़कर भरे हैं",
+    labelEn: "Both semesters combined",
+    type: "checkbox",
+    section: "previous_result",
+  },
+
+  // family and documents
+  annualIncome: {
+    name: "annualIncome",
+    labelHi: "वार्षिक पारिवारिक आय (₹)",
+    labelEn: "Annual family income",
+    type: "number",
+    section: "family_docs",
+    requiredWhen: always,
+    validate: (v) => (Number(v) >= 0 ? null : "आय ऋणात्मक नहीं हो सकती"),
+  },
+  rationCard: {
+    name: "rationCard",
+    labelHi: "राशन कार्ड संख्या",
+    labelEn: "Ration card number",
+    hintHi: "न हो तो 0 भरें — यही आधिकारिक तरीका है",
+    type: "text",
+    section: "family_docs",
+    maxLen: 20,
+    requiredWhen: always,
+  },
+  incomeAppNo: {
+    name: "incomeAppNo",
+    labelHi: "आय प्रमाणपत्र आवेदन संख्या",
+    labelEn: "Income certificate application number",
+    type: "text",
+    section: "family_docs",
+    maxLen: 24,
+    requiredWhen: always,
+  },
+  incomeCertNo: {
+    name: "incomeCertNo",
+    labelHi: "आय प्रमाणपत्र संख्या",
+    labelEn: "Income certificate number",
+    type: "text",
+    section: "family_docs",
+    maxLen: 24,
+    requiredWhen: always,
+  },
+  casteAppNo: {
+    name: "casteAppNo",
+    labelHi: "जाति प्रमाणपत्र आवेदन संख्या",
+    labelEn: "Caste certificate application number",
+    type: "text",
+    section: "family_docs",
+    maxLen: 24,
+  },
+  casteCertNo: {
+    name: "casteCertNo",
+    labelHi: "जाति प्रमाणपत्र संख्या",
+    labelEn: "Caste certificate number",
+    type: "text",
+    section: "family_docs",
+    maxLen: 24,
+  },
+
+  // declarations
+  declAttendance: {
+    name: "declAttendance",
+    labelHi: "मेरी उपस्थिति 75% या अधिक है",
+    labelEn: "My attendance is 75% or more",
+    hintHi: "संस्थान इसे अलग से प्रमाणित करता है; 75% से कम पर फ़ाइल आगे नहीं बढ़ती",
+    type: "checkbox",
+    section: "declaration",
+    requiredWhen: always,
+  },
+  declNoOtherScholarship: {
+    name: "declNoOtherScholarship",
+    labelHi: "मैं कोई अन्य राज्य या केंद्रीय छात्रवृत्ति नहीं ले रहा/रही हूँ",
+    labelEn: "I hold no other state or central scholarship",
+    type: "checkbox",
+    section: "declaration",
+    requiredWhen: always,
+  },
+  declTruthful: {
+    name: "declTruthful",
+    labelHi: "भरी गई जानकारी सही है; गलत जानकारी पर आवेदन निरस्त हो सकता है",
+    labelEn: "The information is correct; false information can void the application",
+    type: "checkbox",
+    section: "declaration",
+    requiredWhen: always,
+  },
+};
+
+/** The section's fields. Section *visibility* per track comes from SCHEMES[track].sections. */
+export function fieldsFor(_track: TrackId, _cycle: Cycle, section: SectionId): FieldSpec[] {
+  return Object.values(FIELDS).filter((f) => f.section === section);
+}
+
+export function isRequired(spec: FieldSpec, ctx: { track: TrackId; cycle: Cycle }): boolean {
+  return spec.requiredWhen ? spec.requiredWhen(ctx) : false;
+}
