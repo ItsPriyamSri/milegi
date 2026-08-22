@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Banner } from "./Banner";
 import { LangToggle, ThemeToggle } from "./Toggles";
 import { t, type Lang } from "@/lib/i18n";
@@ -33,7 +34,7 @@ export async function Shell({
   narrow = false,
 }: {
   lang: Lang;
-  children: React.ReactNode;
+  children: ReactNode;
   wide?: boolean;
   narrow?: boolean;
 }) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
 import { Callout, ErrorNote } from "@/ui/bits";
 
@@ -19,7 +19,7 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
   const [error, setError] = useState<ApiError | null>(null);
   const [code, setCode] = useState("");
 
-  async function sendOtp(e: React.FormEvent) {
+  async function sendOtp(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
@@ -33,7 +33,7 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
     }
   }
 
-  async function verify(e: React.FormEvent) {
+  async function verify(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);

@@ -27,7 +27,7 @@ npm run dev                  # http://localhost:3000
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | Neon pooled connection (`-pooler` host). Empty locally → JSON store under OS temp (or `MILEGI_STORE_PATH`). |
+| `DATABASE_URL` | Neon pooled connection (`-pooler` host). Empty locally → JSON store in `.data/` (or `MILEGI_STORE_PATH`). |
 | `MILEGI_SESSION_SECRET` | HMAC key for session cookies. Change in production. |
 | `MILEGI_STORE_PATH` | Optional override for the local JSON file. |
 | `MILEGI_ALLOW_EPHEMERAL` | Set `1` only for deliberate Vercel smoke deploys without a database. Otherwise a missing `DATABASE_URL` on Vercel returns `STORE_UNCONFIGURED`. |

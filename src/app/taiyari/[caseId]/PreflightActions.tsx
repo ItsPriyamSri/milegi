@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
 import { ErrorNote } from "@/ui/bits";
 
@@ -13,7 +13,7 @@ export function CertificateCheck({ caseId }: { caseId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
 
-  async function verify(e: React.FormEvent) {
+  async function verify(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);

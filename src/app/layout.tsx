@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 import { getLang } from "@/lib/lang";
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     "उत्तर प्रदेश छात्रवृत्ति सेवा का स्वतंत्र प्रोटोटाइप। हर चरण का एक नाम वाला ज़िम्मेदार और एक तारीख़। नकली डेटा।",
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = await getLang();
   return (
     <html lang={lang}>

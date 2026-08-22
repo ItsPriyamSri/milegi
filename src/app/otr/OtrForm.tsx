@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
 import { Callout, ErrorNote } from "@/ui/bits";
 import { CATEGORIES } from "@/server/config/schemes";
@@ -38,7 +38,7 @@ export function OtrForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);

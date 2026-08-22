@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import type { Case, Institute, Notification, Profile, SimConfig } from "./types";
 import { setClockOffset } from "./clock";
@@ -32,8 +31,9 @@ export const DEFAULT_SIM: SimConfig = {
   otpFor: {},
 };
 
+/** Scoped under cwd so Turbopack can see the store is not the whole project tree. */
 function storePath(): string {
-  return process.env.MILEGI_STORE_PATH || path.join(os.tmpdir(), "milegi-store.json");
+  return process.env.MILEGI_STORE_PATH || path.join(process.cwd(), ".data", "milegi-store.json");
 }
 
 function emptySnapshot(): Snapshot {
@@ -134,7 +134,8 @@ export async function hydrate(): Promise<void> {
     await hydrateFromNeon();
   } else {
     try {
-      const parsed = JSON.parse(fs.readFileSync(storePath(), "utf8")) as Snapshot;
+      // turbopackIgnore: path may be env-overridden; store is demo-sized JSON only.
+      const parsed = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ storePath(), "utf8")) as Snapshot;
       snap = { ...emptySnapshot(), ...parsed, sim: { ...DEFAULT_SIM, ...parsed.sim } };
     } catch {
       reseed();
@@ -150,7 +151,9 @@ export async function persist(): Promise<void> {
   if (useNeon()) {
     await persistToNeon();
   } else {
-    fs.writeFileSync(storePath(), JSON.stringify(snap), "utf8");
+    const file = storePath();
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(/* turbopackIgnore: true */ file, JSON.stringify(snap), "utf8");
   }
   dirty = false;
 }
