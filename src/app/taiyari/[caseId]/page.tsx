@@ -87,7 +87,7 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
               {i.actionHi ? (
                 <p
                   style={{
-                    borderLeft: "3px solid var(--rule-strong)",
+                    borderLeft: "1px solid var(--rule-strong)",
                     paddingLeft: "var(--s3)",
                     fontSize: "var(--step-s)",
                   }}

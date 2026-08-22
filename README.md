@@ -75,3 +75,5 @@ docs/         product evidence + implementation plans
 - [`docs/superpowers/plans/`](./docs/superpowers/plans/) — backend and frontend build plans
 
 Built for **Build What Moves India** (2026).
+
+**Live demo:** https://milegi.vercel.app

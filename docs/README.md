@@ -13,8 +13,16 @@ Read in this order:
 | 4 | `superpowers/plans/2026-08-20-milegi-backend.md` | Implementation plan, 17 tasks. Part A (1–10): HTTP-free domain, TDD. Part B (11–17): API routes, sessions, Neon store, end-to-end curl smoke. |
 | 5 | `superpowers/plans/2026-08-20-milegi-frontend.md` | Implementation plan, 12 tasks: design system and shell, autosave, intake, case file, institute console, DWO console, simulator, boundary/help, accessibility and performance, then deploy, review, video and write-up. |
 
-Written during the build, not before it: `../DESIGN.md` (recorded from what ships), `../README.md`,
-`WRITEUP.md`, `VIDEO.md`.
+Written from the shipped build:
+
+| Document | What it is |
+|---|---|
+| `../DESIGN.md` | Civic Ink as shipped: tokens, type, density, component inventory |
+| `../README.md` | Run instructions, env vars, surfaces, demo credentials |
+| `WRITEUP.md` | Hackathon write-up (problem → safety) |
+| `VIDEO.md` | Timed three-minute cut + shot checklist |
+
+Live demo (when deployed): `https://milegi.vercel.app`
 
 ## The one-line version
 

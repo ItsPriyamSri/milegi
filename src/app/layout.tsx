@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
   title: "मिलेगी — छात्रवृत्ति फ़ाइल (प्रोटोटाइप)",
@@ -7,9 +8,10 @@ export const metadata: Metadata = {
     "उत्तर प्रदेश छात्रवृत्ति सेवा का स्वतंत्र प्रोटोटाइप। हर चरण का एक नाम वाला ज़िम्मेदार और एक तारीख़। नकली डेटा।",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await getLang();
   return (
-    <html lang="hi">
+    <html lang={lang}>
       <body>
         {/*
 THESIS: This surface owns the sentence "your file has an owner and a deadline". It refuses the
