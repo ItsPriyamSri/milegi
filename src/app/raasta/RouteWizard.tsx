@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, errorOf, type ApiError } from "@/lib/api";
-import { Callout, ErrorNote } from "@/ui/bits";
+import { Callout, ErrorNote, StatusChip } from "@/ui/bits";
 import { fmtDate, fmtMoney } from "@/lib/format";
 
 type RouteResult = {
@@ -223,9 +223,12 @@ export function RouteWizard() {
         <>
           <div className="sheet stack">
             <p className="eyebrow">आपका आवेदन</p>
-            <h2>
-              {result.schemeHi} · {result.cycle === "renewal" ? "नवीनीकरण" : "नया आवेदन"}
-            </h2>
+            <div className="row-between">
+              <h2 style={{ fontSize: "var(--step-3)" }}>{result.schemeHi}</h2>
+              <StatusChip tone={result.cycle === "renewal" ? "verified" : "waiting"}>
+                {result.cycle === "renewal" ? "नवीनीकरण (Renewal)" : "नया आवेदन (Fresh)"}
+              </StatusChip>
+            </div>
             <p>{result.reasonHi}</p>
             <dl style={{ margin: 0 }}>
               <div className="datarow">

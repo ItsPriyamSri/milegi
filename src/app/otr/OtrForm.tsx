@@ -76,38 +76,46 @@ export function OtrForm() {
   if (result) {
     return (
       <div className="stack" style={{ ["--gap" as string]: "var(--s5)" }}>
-        <div className="sheet stack">
-          <p className="eyebrow">आपकी जीवनभर की पहचान</p>
-          <p className="row" style={{ alignItems: "baseline" }}>
-            <span className="mono" style={{ fontSize: "var(--step-3)", fontWeight: 600 }}>
-              {result.profile.otr}
-            </span>
-            <span className="chip">नकली</span>
-          </p>
-          <p className="muted" style={{ fontSize: "var(--step-s)" }}>
-            OTR एक बार बनता है और जीवनभर चलता है। यह सत्र-वार पंजीकरण संख्या (15 अंक) से अलग चीज़ है —
-            असली पोर्टल पर छात्र सबसे ज़्यादा यहीं उलझते हैं।
-          </p>
-        </div>
-
         {result.duplicate ? (
-          <Callout tone="warn" title="आपका OTR पहले से मौजूद था">
-            <p>{result.duplicateNoteHi}</p>
+          <div className="stamp" style={{ borderLeft: "4px solid var(--waiting)" }}>
+            <div className="row-between">
+              <span className="stamp-kicker">पहचान पुनःप्राप्ति · IDENTITY RECOVERY</span>
+              <span className="chip" data-tone="waiting">
+                पूर्व-पंजीकृत OTR
+              </span>
+            </div>
+            <div className="stamp-name">
+              आपका OTR पहले से मौजूद है: <span className="mono">{result.profile.otr}</span>
+            </div>
+            <p style={{ marginTop: "var(--s2)" }}>{result.duplicateNoteHi}</p>
             {result.profile.duplicateOtrs.length > 0 ? (
-              <p className="mono" style={{ fontSize: "var(--step-s)", marginTop: "var(--s2)" }}>
-                रोकी गई कोशिश: {result.profile.duplicateOtrs.join(", ")}
+              <p className="mono faint" style={{ fontSize: "var(--step-s)", marginTop: "var(--s2)" }}>
+                रोकी गई डुप्लीकेट कोशिश: {result.profile.duplicateOtrs.join(", ")}
               </p>
             ) : null}
-            <p style={{ marginTop: "var(--s2)", fontSize: "var(--step-s)" }}>
-              असली पोर्टल पर दूसरा OTR बन जाने पर दोनों आवेदन ब्लॉक हो जाते हैं और छात्र पूरा साल खो
-              देता है। यहाँ वही पहचान वापस दे दी गई है।
+            <p className="muted" style={{ marginTop: "var(--s2)", fontSize: "var(--step-s)" }}>
+              असली पोर्टल पर दूसरा OTR बनते ही दोनों आवेदन रद्द हो जाते हैं और छात्र साल खो देता है। यहाँ आपकी मूल पहचान वापस दे दी गई है ताकि आप नवीनीकरण (Renewal) के तौर पर आगे बढ़ सकें।
             </p>
-          </Callout>
-        ) : null}
+          </div>
+        ) : (
+          <div className="sheet stack">
+            <p className="eyebrow">आपकी जीवनभर की पहचान</p>
+            <p className="row" style={{ alignItems: "baseline" }}>
+              <span className="mono" style={{ fontSize: "var(--step-3)", fontWeight: 600 }}>
+                {result.profile.otr}
+              </span>
+              <span className="chip">नकली</span>
+            </p>
+            <p className="muted" style={{ fontSize: "var(--step-s)" }}>
+              OTR एक बार बनता है और जीवनभर चलता है। यह सत्र-वार पंजीकरण संख्या (15 अंक) से अलग चीज़ है —
+              असली पोर्टल पर छात्र सबसे ज़्यादा यहीं उलझते हैं।
+            </p>
+          </div>
+        )}
 
         <div className="row">
           <button className="btn btn-primary" type="button" onClick={() => router.push("/raasta")}>
-            आगे बढ़ें — कौन-सा आवेदन बनेगा
+            {result.duplicate ? "नवीनीकरण के रूप में आगे बढ़ें" : "आगे बढ़ें — कौन-सा आवेदन बनेगा"}
           </button>
           <Link className="btn btn-quiet" href="/madad">
             OTR और पंजीकरण संख्या में अंतर पढ़ें

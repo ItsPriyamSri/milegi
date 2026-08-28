@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
 import { Callout, ErrorNote } from "@/ui/bits";
+import { OtpBoxes } from "@/ui/OtpBoxes";
 
 type VerifyResponse = {
   profile: { id: string; otr: string; nameHi: string } | null;
@@ -116,15 +117,12 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
             </p>
           </Callout>
           <div className="field">
-            <label htmlFor="otp">6 अंकों का OTP</label>
-            <input
-              id="otp"
-              name="otp"
-              inputMode="numeric"
-              maxLength={6}
-              autoFocus
+            <label htmlFor="otp-boxes">6 अंकों का OTP</label>
+            <OtpBoxes
+              id="otp-boxes"
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={setOtp}
+              disabled={busy}
             />
           </div>
           <div className="row">
