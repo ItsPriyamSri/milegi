@@ -1,4 +1,5 @@
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { loadOwnCase } from "@/lib/loadCase.server";
 import { CORRECTABLE_FIELDS } from "@/server/patch";
@@ -12,15 +13,17 @@ export default async function Aavedan({ params }: { params: Promise<{ caseId: st
 
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">
-        {c.trackHi} · {c.cycleHi} · {c.id}
-      </p>
-      <h1 style={{ marginTop: "var(--s3)" }}>एक फ़ॉर्म, एक पेज</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s5)" }}>
-        {prefilled
-          ? "पिछले वर्ष की जानकारी भर दी गई है। नवीनीकरण में असल में तीन ही चीज़ें बदलती हैं — परिणाम, अंक और इस वर्ष का शुल्क।"
-          : "हर खाना यहीं भरा जाता है, कोई अलग डैशबोर्ड नहीं। जो कुछ भी टाइप करते हैं वह हर कीस्ट्रोक पर इस फ़ोन पर सेव होता है, फिर सर्वर पर।"}
-      </p>
+      <PageHead
+        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
+        title="एक फ़ॉर्म, एक पेज"
+        meta={
+          <p className="measure muted">
+            {prefilled
+              ? "पिछले वर्ष की जानकारी भर दी गई है। नवीनीकरण में असल में तीन ही चीज़ें बदलती हैं — परिणाम, अंक और इस वर्ष का शुल्क।"
+              : "हर खाना यहीं भरा जाता है, कोई अलग डैशबोर्ड नहीं। जो कुछ भी टाइप करते हैं वह हर कीस्ट्रोक पर इस फ़ोन पर सेव होता है, फिर सर्वर पर।"}
+          </p>
+        }
+      />
       <FormShell
         caseId={c.id}
         track={c.track}

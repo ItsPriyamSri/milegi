@@ -27,11 +27,11 @@ export function LockPanel({ caseId }: { caseId: string }) {
   return (
     <div className="stack" id="lock-errors">
       {error ? <ErrorNote error={error} /> : null}
-      <div className="row">
-        <button className="btn btn-primary" type="button" onClick={lock} disabled={busy}>
+      <div className="row" style={{ width: "100%" }}>
+        <button className="btn btn-primary btn-block" type="button" onClick={lock} disabled={busy}>
           {busy ? "लॉक कर रहे हैं…" : "फ़ॉर्म लॉक करें"}
         </button>
-        <button className="btn" type="button" onClick={() => window.print()}>
+        <button className="btn btn-block" type="button" onClick={() => window.print()}>
           प्रिंट करें
         </button>
       </div>

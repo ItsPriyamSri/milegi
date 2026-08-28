@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { bi, t } from "@/lib/i18n";
 import { loadOwnCase } from "@/lib/loadCase.server";
@@ -13,7 +14,7 @@ const TONE: Record<string, Tone> = {
   unknown: "neutral",
 };
 
-const GLYPH: Record<string, string> = { ok: "✓", warn: "!", blocked: "✕", unknown: "?" };
+const GLYPH: Record<string, string> = { ok: "✓", warn: "!", blocked: "▲", unknown: "?" };
 
 const FIXED_BY_KEY: Record<string, string> = {
   student: "fixedByStudent",
@@ -32,15 +33,17 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
 
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">
-        {c.trackHi} · {c.cycleHi} · {c.id}
-      </p>
-      <h1 style={{ marginTop: "var(--s3)" }}>तैयारी जाँच</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s4)" }}>
-        {blocked.length === 0
-          ? `${c.preflight.length} में से कोई रुकावट नहीं। फ़ॉर्म भरकर लॉक कर सकते हैं।`
-          : `${c.preflight.length} में से ${blocked.length} रुकावट है — फ़ॉर्म भरना अभी भी शुरू कर सकते हैं, लेकिन लॉक करने से पहले यह ठीक करनी होगी।`}
-      </p>
+      <PageHead
+        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
+        title="तैयारी जाँच (Pre-flight)"
+        meta={
+          <p className="measure muted">
+            {blocked.length === 0
+              ? `${c.preflight.length} में से कोई रुकावट नहीं। फ़ॉर्म भरकर लॉक कर सकते हैं।`
+              : `${c.preflight.length} में से ${blocked.length} रुकावट है — फ़ॉर्म भरना शुरू करने से पहले यह ठीक करनी होगी।`}
+          </p>
+        }
+      />
       <p className="faint measure" style={{ fontSize: "var(--step-s)", marginBottom: "var(--s5)" }}>
         असली पोर्टल पर यह सब 30 मिनट टाइप करने के बाद, अलग डैशबोर्ड पर या दिसंबर में जिला स्तर पर पता
         चलता है।
@@ -56,7 +59,7 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
         </div>
 
         {blocked.length > 0 ? (
-          <Callout tone="danger" title="लॉक करने से पहले यह ठीक करनी होगी">
+          <Callout tone="danger" title="फ़ॉर्म लॉक करने से पहले यह रुकावटें ठीक करनी होंगी">
             <ul>
               {blocked.map((i) => (
                 <li key={i.id}>{bi(i.titleHi, i.titleEn, lang)}</li>
@@ -66,63 +69,85 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
         ) : null}
 
         <ol className="stack" style={{ listStyle: "none", padding: 0, ["--gap" as string]: "var(--s3)" }}>
-          {c.preflight.map((i) => (
-            <li className="sheet stack" key={i.id} style={{ ["--gap" as string]: "var(--s2)" }}>
-              <div className="row-between">
-                <strong>{bi(i.titleHi, i.titleEn, lang)}</strong>
-                <StatusChip tone={TONE[i.state]} glyph={GLYPH[i.state]}>
-                  {t(
-                    i.state === "ok"
-                      ? "stateOk"
-                      : i.state === "warn"
-                        ? "stateWarn"
-                        : i.state === "blocked"
-                          ? "stateBlocked"
-                          : "stateUnknown",
-                    lang,
-                  )}
-                </StatusChip>
-              </div>
-              <p className="muted">{bi(i.detailHi, i.detailEn, lang)}</p>
-              {i.actionHi ? (
-                <p
-                  style={{
-                    borderLeft: "1px solid var(--rule-strong)",
-                    paddingLeft: "var(--s3)",
-                    fontSize: "var(--step-s)",
-                  }}
-                >
-                  <strong>{t(FIXED_BY_KEY[i.fixedBy] ?? "fixedByStudent", lang)}:</strong>{" "}
-                  {i.actionHi}
-                  {i.etaHi ? (
-                    <span className="faint">
-                      {" "}
-                      · {t("eta", lang)} {i.etaHi}
-                    </span>
-                  ) : null}
-                </p>
-              ) : null}
-              {i.state === "unknown" ? (
-                <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-                  जाँच नहीं हो पाई, इसलिए इसे &ldquo;ठीक है&rdquo; नहीं माना गया। यही अंतर है — असली
-                  पोर्टल पर ऐसी चुप्पी बाद में अस्वीकृति बनकर लौटती है।
-                </p>
-              ) : null}
-              {i.source ? (
-                <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-                  {t("source", lang)}: <span className="mono">{i.source}</span>
-                </p>
-              ) : null}
-            </li>
-          ))}
+          {c.preflight.map((i) => {
+            const isBlocked = i.state === "blocked";
+            return (
+              <li
+                className="sheet stack"
+                key={i.id}
+                style={{
+                  ["--gap" as string]: "var(--s2)",
+                  borderLeft: isBlocked ? "3px solid var(--breach)" : undefined,
+                  background: isBlocked ? "var(--breach-bg)" : undefined,
+                }}
+              >
+                <div className="row-between">
+                  <strong>{bi(i.titleHi, i.titleEn, lang)}</strong>
+                  <StatusChip tone={TONE[i.state]} glyph={GLYPH[i.state]}>
+                    {t(
+                      i.state === "ok"
+                        ? "stateOk"
+                        : i.state === "warn"
+                          ? "stateWarn"
+                          : i.state === "blocked"
+                            ? "stateBlocked"
+                            : "stateUnknown",
+                      lang,
+                    )}
+                  </StatusChip>
+                </div>
+                <p className={isBlocked ? undefined : "muted"}>{bi(i.detailHi, i.detailEn, lang)}</p>
+                {i.actionHi ? (
+                  <p
+                    style={{
+                      borderLeft: `2px solid ${isBlocked ? "var(--breach)" : "var(--rule-strong)"}`,
+                      paddingLeft: "var(--s3)",
+                      fontSize: "var(--step-s)",
+                    }}
+                  >
+                    <strong>{t(FIXED_BY_KEY[i.fixedBy] ?? "fixedByStudent", lang)}:</strong>{" "}
+                    {i.actionHi}
+                    {i.etaHi ? (
+                      <span className="faint">
+                        {" "}
+                        · {t("eta", lang)} {i.etaHi}
+                      </span>
+                    ) : null}
+                  </p>
+                ) : null}
+                {i.state === "unknown" ? (
+                  <p className="faint" style={{ fontSize: "var(--step-s)" }}>
+                    जाँच नहीं हो पाई, इसलिए इसे &ldquo;ठीक है&rdquo; नहीं माना गया। यही अंतर है — असली
+                    पोर्टल पर ऐसी चुप्पी बाद में अस्वीकृति बनकर लौटती है।
+                  </p>
+                ) : null}
+                {i.source ? (
+                  <p className="faint" style={{ fontSize: "var(--step-s)" }}>
+                    {t("source", lang)}: <span className="mono">{i.source}</span>
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
         </ol>
 
         <CertificateCheck caseId={c.id} />
 
         <div className="row">
-          <Link className="btn btn-primary" href={`/aavedan/${c.id}`}>
-            फ़ॉर्म भरना शुरू करें
-          </Link>
+          {blocked.length > 0 ? (
+            <button
+              className="btn btn-primary"
+              disabled
+              style={{ opacity: 0.6, cursor: "not-allowed" }}
+              title="पहले ऊपर दी गई रुकावट ठीक करें"
+            >
+              फ़ॉर्म भरना शुरू करें (रुकावट मौजूद है)
+            </button>
+          ) : (
+            <Link className="btn btn-primary" href={`/aavedan/${c.id}`}>
+              फ़ॉर्म भरना शुरू करें
+            </Link>
+          )}
           <RerunPreflight caseId={c.id} />
         </div>
 
@@ -133,3 +158,4 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
     </Shell>
   );
 }
+

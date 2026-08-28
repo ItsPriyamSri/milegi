@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { loadOwnCase } from "@/lib/loadCase.server";
 import { Callout, Money, StatusChip } from "@/ui/bits";
@@ -30,10 +31,16 @@ export default async function Jaanch({ params }: { params: Promise<{ caseId: str
 
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">
-        {c.trackHi} · {c.cycleHi} · {c.id}
-      </p>
-      <h1 style={{ marginTop: "var(--s3)" }}>जाँच और लॉक</h1>
+      <PageHead
+        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
+        title="जाँच और लॉक"
+        meta={
+          <p className="measure muted">
+            फ़ॉर्म लॉक करने से पहले सभी जानकारी जाँच लें। लॉक के बाद संस्थान में हार्ड-कॉपी जमा करने की
+            घड़ी शुरू हो जाती है।
+          </p>
+        }
+      />
 
       <div className="stack" style={{ ["--gap" as string]: "var(--s5)", marginTop: "var(--s5)" }}>
         {problems.length > 0 ? (
@@ -107,28 +114,35 @@ export default async function Jaanch({ params }: { params: Promise<{ caseId: str
         </section>
 
         <section className="sheet stack">
-          <h2>लॉक करने का मतलब</h2>
-          <ul className="stack" style={{ ["--gap" as string]: "var(--s2)", paddingLeft: "var(--s5)" }}>
+          <h2>लॉक करने के परिणाम और समय सीमा</h2>
+          <div className="stamp" style={{ marginTop: "var(--s2)" }}>
+            <div className="stamp-kicker">हार्ड कॉपी जमा करने की अंतिम तारीख़ · SUBMISSION DEADLINE</div>
+            <div className="stamp-name" style={{ fontSize: "var(--step-3)" }}>
+              {fmtWeekday(threeDaysOut)}
+            </div>
+            <p className="faint" style={{ fontSize: "var(--step-s)", marginTop: "var(--s1)" }}>
+              अंतिम प्रिंट, शुल्क रसीद और मार्कशीट 3 दिन में कॉलेज में जमा करनी होंगी।
+            </p>
+          </div>
+          <ol className="stack" style={{ ["--gap" as string]: "var(--s3)", marginTop: "var(--s3)" }}>
             <li>
-              लॉक के बाद ऑनलाइन बदलाव सिर्फ़ विभाग की सुधार विंडो में होता है — इस वर्ग के लिए{" "}
+              <strong>सुधार केवल तय विंडो में:</strong> लॉक के बाद ऑनलाइन बदलाव सिर्फ़ विभाग की सुधार विंडो में होता है — इस वर्ग के लिए{" "}
               <strong>
                 {fmtDate(c.calendar.correctionOpen)} से {fmtDate(c.calendar.correctionClose)}
               </strong>{" "}
               तक।
             </li>
             <li>
-              अंतिम प्रिंट, शुल्क रसीद और मार्कशीट <strong>3 दिन</strong> में कॉलेज में जमा करनी होंगी —
-              यानी लगभग <strong>{fmtWeekday(threeDaysOut)}</strong> तक।
+              <strong>3 दिन का हार्ड-कॉपी नियम:</strong> अंतिम प्रिंट और मूल रसीद 3 दिन में कॉलेज में जमा करना अनिवार्य है।
             </li>
             <li>
-              संस्थान को <strong>{fmtDate(c.calendar.instituteForwardDeadline)}</strong> तक अग्रसारित
-              करना है। यह तारीख़ बीत जाए तो असली प्रणाली में फ़ॉर्म स्वतः निरस्त हो जाता है — इसीलिए यहाँ
-              हर चरण पर घड़ी दिखती है।
+              <strong>संस्थान की समय सीमा:</strong> संस्थान को{" "}
+              <strong>{fmtDate(c.calendar.instituteForwardDeadline)}</strong> तक अग्रसारित करना है। यह तारीख़ बीत जाए तो असली पोर्टल पर फ़ॉर्म स्वतः निरस्त हो जाता है।
             </li>
             <li>
-              भुगतान अवधि: {fmtDate(c.calendar.disbursementFrom)} – {fmtDate(c.calendar.disbursementTo)}.
+              <strong>भुगतान अवधि:</strong> {fmtDate(c.calendar.disbursementFrom)} से {fmtDate(c.calendar.disbursementTo)} तक।
             </li>
-          </ul>
+          </ol>
           <p className="faint" style={{ fontSize: "var(--step-s)" }}>
             स्रोत: {c.calendar.source} (विश्वसनीयता: {c.calendar.confidence})
           </p>

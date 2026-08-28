@@ -6,6 +6,7 @@ import { api, errorOf, type ApiError } from "@/lib/api";
 import { useAutosave } from "@/lib/useAutosave";
 import { fmtDate, fmtMoney } from "@/lib/format";
 import { Callout, ErrorNote } from "@/ui/bits";
+import { SaveChip } from "@/ui/SaveChip";
 import { FIELDS, isRequired, validateField, type FieldSpec } from "@/server/fields";
 import { SCHEMES, type SectionId } from "@/server/config/schemes";
 import type { Cycle, TrackId } from "@/server/types";
@@ -349,10 +350,7 @@ export function FormShell(props: FormShellProps) {
           zIndex: 5,
         }}
       >
-        <span aria-live="polite" className="chip" data-tone={saveState === "saved" ? "verified" : "waiting"}>
-          <span aria-hidden="true">{saveState === "saved" ? "✓" : "◕"}</span>
-          {saveLabel}
-        </span>
+        <SaveChip state={lastError ? "error" : saveState} />
         <span className="faint tnum" style={{ fontSize: "var(--step-s)" }}>
           अंतिम तारीख़ {fmtDate(props.deadline)}
         </span>
