@@ -1,26 +1,26 @@
-/* Civic Ink — the record, read the way a ledger or a timetable is read.
-   Ink on cool paper, one action accent, semantic status colour, tabular numerals. */
+/* Gazette Register — cool mineral paper, cut-record 3px sheets, stamp-pad indigo,
+   clerk-stamp owner block, dak-register ledger spine, UPI-receipt paid state. */
 :root {
-  --paper: #f5f6f4;
-  --surface: #ffffff;
-  --surface-sunk: #eef0ed;
-  --ink: #14171a;
-  --ink-muted: #585f66;
-  --ink-faint: #7c848b;
-  --rule: #dfe3de;
-  --rule-strong: #c4cac3;
-  --action: #22357a;
-  --action-ink: #ffffff;
-  --action-hover: #1a2a63;
-  --focus: #3355d1;
-  --waiting: #8a5a00;
-  --waiting-bg: #fbf3e2;
-  --breach: #a32219;
-  --breach-bg: #fceeec;
-  --verified: #1c6b3f;
-  --verified-bg: #eaf4ee;
-  --paid: #0f4c37;
-  --paid-bg: #e4f1ea;
+  --paper: #eef0eb;
+  --surface: #fbfcf9;
+  --surface-sunk: #e4e7e1;
+  --ink: #12151a;
+  --ink-muted: #4e565e;
+  --ink-faint: #73808a;
+  --rule: #d5dbd3;
+  --rule-strong: #b7c0b6;
+  --action: #1e3a8a;
+  --action-ink: #f7f8f4;
+  --action-hover: #172e70;
+  --focus: #2f5de0;
+  --waiting: #8a4b00;
+  --waiting-bg: #f8eedc;
+  --breach: #9b1c16;
+  --breach-bg: #fbeceb;
+  --verified: #145c38;
+  --verified-bg: #e6f3eb;
+  --paid: #0b4a36;
+  --paid-bg: #def0e8;
 
   --s1: 4px;
   --s2: 8px;
@@ -32,68 +32,76 @@
   --s8: 64px;
 
   --radius: 3px;
-  --measure: 64ch;
-  --font: ui-sans-serif, "Noto Sans Devanagari", "Nirmala UI", system-ui, -apple-system,
-    "Segoe UI", Roboto, sans-serif;
+  --measure: 62ch;
+  --font: var(--font-deva), var(--font-latin), ui-sans-serif, "Nirmala UI", system-ui, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", "Roboto Mono", "Courier New", monospace;
 
   --step-s: 0.8125rem;
-  --step-0: 0.9375rem;
-  --step-1: 1.0625rem;
-  --step-2: 1.25rem;
-  --step-3: 1.5rem;
-  --step-4: 1.9375rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.375rem;
+  --step-3: 1.75rem;
+  --step-4: 2.25rem;
 
-  --motion: 150ms cubic-bezier(0.2, 0, 0.2, 1);
+  --motion: 180ms cubic-bezier(0.2, 0, 0.2, 1);
+  --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent);
+  --grain: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    color-mix(in srgb, var(--ink) 3.5%, transparent) 3px
+  );
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #14171a;
-    --surface: #1b1f23;
-    --surface-sunk: #111518;
+    --paper: #101317;
+    --surface: #171b21;
+    --surface-sunk: #0d1014;
     --ink: #eceff1;
-    --ink-muted: #a8b0b7;
-    --ink-faint: #7e868d;
-    --rule: #2c3238;
-    --rule-strong: #3d444b;
-    --action: #a8bbf5;
-    --action-ink: #111518;
-    --action-hover: #c2d0fa;
-    --focus: #a8bbf5;
-    --waiting: #e7b44f;
-    --waiting-bg: #2a2213;
-    --breach: #f0837a;
-    --breach-bg: #2c1715;
-    --verified: #74c795;
-    --verified-bg: #13251b;
+    --ink-muted: #a4adb6;
+    --ink-faint: #78828b;
+    --rule: #2a313a;
+    --rule-strong: #3b4450;
+    --action: #9db4ff;
+    --action-ink: #0d1014;
+    --action-hover: #b8c8ff;
+    --focus: #9db4ff;
+    --waiting: #f3b953;
+    --waiting-bg: #2a2010;
+    --breach: #f78b82;
+    --breach-bg: #2c1412;
+    --verified: #7bce9c;
+    --verified-bg: #11261b;
     --paid: #8fd6b0;
-    --paid-bg: #10251c;
+    --paid-bg: #0f281d;
+    --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
   }
 }
 
 /* The toggle has to win in both directions, so the dark values are repeated verbatim. */
 :root[data-theme="dark"] {
-  --paper: #14171a;
-  --surface: #1b1f23;
-  --surface-sunk: #111518;
+  --paper: #101317;
+  --surface: #171b21;
+  --surface-sunk: #0d1014;
   --ink: #eceff1;
-  --ink-muted: #a8b0b7;
-  --ink-faint: #7e868d;
-  --rule: #2c3238;
-  --rule-strong: #3d444b;
-  --action: #a8bbf5;
-  --action-ink: #111518;
-  --action-hover: #c2d0fa;
-  --focus: #a8bbf5;
-  --waiting: #e7b44f;
-  --waiting-bg: #2a2213;
-  --breach: #f0837a;
-  --breach-bg: #2c1715;
-  --verified: #74c795;
-  --verified-bg: #13251b;
+  --ink-muted: #a4adb6;
+  --ink-faint: #78828b;
+  --rule: #2a313a;
+  --rule-strong: #3b4450;
+  --action: #9db4ff;
+  --action-ink: #0d1014;
+  --action-hover: #b8c8ff;
+  --focus: #9db4ff;
+  --waiting: #f3b953;
+  --waiting-bg: #2a2010;
+  --breach: #f78b82;
+  --breach-bg: #2c1412;
+  --verified: #7bce9c;
+  --verified-bg: #11261b;
   --paid: #8fd6b0;
-  --paid-bg: #10251c;
+  --paid-bg: #0f281d;
+  --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -104,3 +112,4 @@
     transition-duration: 0.001ms !important;
   }
 }
+

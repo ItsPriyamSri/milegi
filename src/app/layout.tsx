@@ -1,7 +1,24 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Noto_Sans, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
 import { getLang } from "@/lib/lang";
+
+const noto = Noto_Sans({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-latin",
+  adjustFontFallback: true,
+});
+
+const notoDeva = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-deva",
+  adjustFontFallback: true,
+});
 
 export const metadata: Metadata = {
   title: "मिलेगी — छात्रवृत्ति फ़ाइल (प्रोटोटाइप)",
@@ -12,22 +29,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = await getLang();
   return (
-    <html lang={lang}>
+    <html lang={lang} className={`${notoDeva.variable} ${noto.variable}`}>
       <body>
         {/*
-THESIS: This surface owns the sentence "your file has an owner and a deadline". It refuses the
-government-portal arrangement where a citizen screen is a menu of logins plus a status word with no
-clock, and it refuses the SaaS arrangement where everything is a rounded card.
-OWN-WORLD: Ink on cool paper. Rules only where a boundary is real. One indigo action accent; waiting,
-breach, verified and paid each carry a glyph plus a word. Tabular numerals, right-aligned money and
-dates. Signature device: the stage ledger, a vertical rule with stage nodes carrying owner, date and
-elapsed days. System type stack, no font request, Devanagari at 1.65 line-height.
-STORY: The visitor learns this is independent and synthetic, sees what is checked before they type,
-fills one form once, and leaves holding a page naming who has their file and until when.
-FIRST VIEWPORT: banner; one line of what this is; the two real doors at full width; then the three
-things this fixes, each one line with a number.
-FORM: single-column civic record on mobile, dense ledger tables on operator surfaces. Direction pinned
-by the builder (Civic Ink); no concept roll was run because a pinned direction beats the roll.
+THESIS: This surface owns "your file has an owner and a deadline." It refuses a menu of logins with a status word, and it refuses a SaaS card grid.
+OWN-WORLD: Gazette Register — cool mineral paper, cut-record 3px sheets, stamp-pad indigo, clerk-stamp owner block, dak-register ledger spine, UPI-receipt paid state. Noto Sans Devanagari UI, two weights, self-hosted subset. Status is glyph plus word. No emblem, no glass, no 16px radius.
+STORY: The visitor sees an independent prototype, two doors, and a labelled synthetic case strip naming an owner and a weekday. They leave holding a file page with a sticky duty strip.
+FIRST VIEWPORT: banner; Hindi money-question; two full-width doors; demo case strip with नकली chip; then three claims.
+FORM: Gazette Register. Student = single-column record. Operator = dense ledger table. Sticky duty strip is the signature interaction.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
         */}
         {children}
@@ -35,3 +44,4 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </html>
   );
 }
+

@@ -136,11 +136,8 @@ true right now, who holds it, what you do next, by when. English is a complete p
 ## Brand commitments (user-pinned)
 
 - Name **Milegi** ("मिलेगी" — *you will get it*). Independent tool identity, never official-looking.
-- Visual direction pinned by the builder: **Civic Ink** — quiet, dense, Devanagari-first, ink on cool
-  paper, one confident action accent, semantic status colour, tabular data density. Explicitly rejected
-  earlier: NIC navy + emblem imitation, ruled exam-copy/notebook, cream-and-terracotta, generic SaaS
-  card grids.
-- **No web fonts.** A two-bar phone at 11pm does not wait for a font file.
+- Visual direction: **Gazette Register** — cool mineral paper, clerk-stamp owner, dak-register ledger, UPI-receipt paid state. Still refuses NIC emblem imitation, ruled exam-copy, cream-and-terracotta, generic SaaS card grids.
+- Type: self-hosted Noto Sans / Noto Sans Devanagari via `next/font`, Hindi+Latin subset, two weights, ~80KB budget, `display: swap`. System stack remains the fallback. No third-party font CDN.
 - Mobile floor 360px for the student app; operator consoles are desktop-dense but must not break on a
   tablet.
 
