@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { loadOwnCase } from "@/lib/loadCase.server";
 import { notificationsFor } from "@/server/store";
@@ -13,13 +14,16 @@ export default async function Outbox({ params }: { params: Promise<{ caseId: str
 
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">{c.id}</p>
-      <h1 style={{ marginTop: "var(--s3)" }}>भेजी गई सूचनाएँ</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s5)" }}>
-        असली पोर्टल किसी भी चरण पर SMS नहीं भेजता — फ़ाइल रुकी है या नहीं, यह छात्र को खुद लॉगिन करके
-        देखना पड़ता है। यहाँ हर सूचना दर्ज होती है, और यह सूची ही सबूत है। इस प्रोटोटाइप में सूचनाएँ
-        सिर्फ़ दर्ज होती हैं, भेजी नहीं जातीं।
-      </p>
+      <PageHead
+        eyebrow={`आउटबॉक्स · ${c.id}`}
+        title="भेजी गई सूचनाएँ"
+        meta={
+          <p className="measure muted">
+            असली पोर्टल किसी भी चरण पर SMS नहीं भेजता — फ़ाइल रुकी है या नहीं, यह छात्र को खुद लॉगिन करके
+            देखना पड़ता है। यहाँ हर सूचना दर्ज होती है, और यह सूची ही सबूत है।
+          </p>
+        }
+      />
 
       {list.length === 0 ? (
         <p className="sheet muted">अभी कोई सूचना दर्ज नहीं हुई।</p>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { loadOwnCase } from "@/lib/loadCase.server";
 import { Callout } from "@/ui/bits";
@@ -21,23 +22,42 @@ export default async function Shikayat({ params }: { params: Promise<{ caseId: s
 
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">{c.id}</p>
-      <h1 style={{ marginTop: "var(--s3)" }}>शिकायत का मसौदा</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s4)" }}>
-        एक दर्ज मामले (GOVUP/E/2026/0035742) में फ़ाइल तीन महीने एक ही चरण पर रुकी रही और तभी चली जब
-        छात्र ने खुद जनसुनवाई पर शिकायत लिखी। वही चिट्ठी यहाँ अपने आप बन जाती है — तारीख़ें, ज़िम्मेदार
-        और देरी सब फ़ाइल से।
-      </p>
+      <PageHead
+        eyebrow={`शिकायत मसौदा · ${c.id}`}
+        title="जनसुनवाई / ग्रीवेंस मसौदा"
+        meta={
+          <p className="measure muted">
+            एक दर्ज मामले (GOVUP/E/2026/0035742) में फ़ाइल तीन महीने एक ही चरण पर रुकी रही और तभी चली जब
+            छात्र ने खुद जनसुनवाई पर शिकायत लिखी। वही चिट्ठी यहाँ अपने आप बन जाती है — तारीख़ें, ज़िम्मेदार
+            और देरी सब फ़ाइल से।
+          </p>
+        }
+      />
+
+      <div className="sheet sheet-sunk" style={{ marginTop: "var(--s4)" }}>
+        <div className="row-between">
+          <span className="stamp-kicker">
+            ज़िम्मेदार: {c.owner ? `${c.owner.nameHi} (${c.owner.designationHi})` : "विभाग"}
+          </span>
+          <span className="tnum faint" style={{ fontSize: "var(--step-s)" }}>
+            {c.breachDays > 0 ? `${c.breachDays} दिन की देरी` : "समय सीमा में"}
+          </span>
+        </div>
+        <div style={{ marginTop: "var(--s3)" }}>
+          <CopyDraft text={draft.bodyHi} caseId={c.id} />
+        </div>
+      </div>
+
       <Callout tone="info" title="भेजना आपके हाथ में है">
         <p style={{ fontSize: "var(--step-s)" }}>
           यह प्रोटोटाइप आपकी ओर से कोई शिकायत दर्ज नहीं करता और किसी सरकारी प्रणाली से जुड़ा नहीं है।
-          असली रास्ते: जनसुनवाई पोर्टल, जिला समाज कल्याण कार्यालय, और विभागीय हेल्पलाइन।
+          असली रास्ते: जनसुनवाई पोर्टल (jansunwai.up.nic.in), जिला समाज कल्याण अधिकारी, एवं विभागीय हेल्पलाइन।
         </p>
       </Callout>
 
-      <div className="sheet" style={{ marginTop: "var(--s5)" }}>
+      <div className="sheet stack" style={{ marginTop: "var(--s4)" }}>
         <p className="eyebrow">विषय</p>
-        <p style={{ marginBottom: "var(--s4)" }}>{draft.subjectHi}</p>
+        <p style={{ fontWeight: 600 }}>{draft.subjectHi}</p>
         <pre
           className="mono"
           style={{
@@ -51,9 +71,6 @@ export default async function Shikayat({ params }: { params: Promise<{ caseId: s
         >
           {draft.bodyHi}
         </pre>
-        <div style={{ marginTop: "var(--s4)" }}>
-          <CopyDraft text={draft.bodyHi} caseId={c.id} />
-        </div>
       </div>
 
       <details className="sheet" style={{ marginTop: "var(--s4)" }}>
