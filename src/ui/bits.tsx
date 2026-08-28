@@ -78,13 +78,15 @@ export function Money({
   amount,
   label,
   basis,
+  hero,
 }: {
   amount: number;
   label: ReactNode;
   basis: string;
+  hero?: boolean;
 }) {
   return (
-    <div className="money">
+    <div className="money" data-hero={hero ? "1" : undefined}>
       <span className="money-label">{label}</span>
       <span className="money-amount">{fmtMoney(amount)}</span>
       <span className="money-basis">{basis}</span>

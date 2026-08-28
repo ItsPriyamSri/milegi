@@ -8,10 +8,24 @@
 html { -webkit-text-size-adjust: 100%; }
 
 body {
+  position: relative;
   margin: 0;
   background: var(--paper);
   color: var(--ink);
   font: var(--step-0) / 1.6 var(--font);
+}
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--grain);
+  opacity: 1;
+}
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 :lang(hi) { line-height: 1.65; }
