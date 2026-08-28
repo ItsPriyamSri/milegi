@@ -59,7 +59,7 @@ hr { border: 0; border-top: 1px solid var(--rule); margin: var(--s5) 0; }
   background: var(--ink);
   color: var(--paper);
   font-size: var(--step-s);
-  padding: 6px var(--s4);
+  padding: 8px var(--s4);
   text-align: center;
   letter-spacing: 0.01em;
 }
@@ -84,7 +84,7 @@ hr { border: 0; border-top: 1px solid var(--rule); margin: var(--s5) 0; }
   background: var(--surface);
 }
 .brand { display: flex; align-items: baseline; gap: var(--s2); text-decoration: none; color: var(--ink); }
-.brand-mark { font-size: var(--step-2); font-weight: 700; letter-spacing: -0.02em; }
+.brand-mark { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.02em; }
 .brand-sub { font-size: var(--step-s); color: var(--ink-faint); }
 .topbar-actions { display: flex; align-items: center; gap: var(--s2); }
 .toggle {

@@ -55,6 +55,23 @@ export const DICT: Record<string, Entry> = {
     en: "A filed grievance (GOVUP/E/2026/0035742): three months at one stage, no reason, nobody accountable.",
   },
 
+  howToTry: {
+    hi: "अज़माने का तरीक़ा: अगले स्क्रीन पर OTP दिखेगा · डेमो आधार 000012340001 (सीडेड)",
+    en: "How to try: OTP prints on the next screen · demo Aadhaar 000012340001 (seeded)",
+  },
+  fakeChip: { hi: "नकली", en: "MOCK" },
+  demoStripKicker: {
+    hi: "नकली फ़ाइल — ऐसा दिखता है जब किसी के पास ज़िम्मेदारी होती है",
+    en: "Synthetic file — this is what accountability looks like",
+  },
+  demoStripOwner: { hi: "श्री आर. के. वर्मा", en: "Shri R. K. Verma" },
+  demoStripRole: {
+    hi: "छात्रवृत्ति लिपिक · छत्रपति शाहू जी महाराज विश्वविद्यालय, कानपुर",
+    en: "Scholarship clerk · CSJMU Kanpur",
+  },
+  demoStripDue: { hi: "समय सीमा शुक्रवार 12 सितम्बर", en: "Due Friday 12 Sep" },
+  demoStripWait: { hi: "14 दिन से इसी चरण पर", en: "14 days at this stage" },
+
   navLimits: { hi: "सीमाएँ — क्या सॉफ़्टवेयर ठीक नहीं कर सकता", en: "Limits — what software cannot fix" },
   navHelp: { hi: "मदद: OTR, शुल्क, तारीख़ें", en: "Help: OTR, fees, dates" },
   navSim: { hi: "मॉक प्रणाली पैनल", en: "Mock system panel" },

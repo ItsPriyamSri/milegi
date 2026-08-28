@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { StatusChip } from "@/ui/bits";
 import { getLang } from "@/lib/lang";
 import { t } from "@/lib/i18n";
 
@@ -8,11 +9,14 @@ export default async function Home() {
   return (
     <Shell lang={lang}>
       <p className="eyebrow">{t("brandSub", lang)}</p>
-      <h1 className="measure" style={{ marginTop: "var(--s3)" }}>
-        {lang === "en" ? "Will the money arrive, when, and who is holding my file?" : "पैसा आएगा या नहीं, कब आएगा, और फ़ाइल किसके पास है?"}
+      <h1 className="measure" style={{ marginTop: "var(--s2)" }}>
+        {lang === "en"
+          ? "Will the money arrive, when, and who is holding my file?"
+          : "पैसा आएगा या नहीं, कब आएगा, और फ़ाइल किसके पास है?"}
       </h1>
-      <p className="lede muted" style={{ marginTop: "var(--s4)" }}>
-        {t("landingLede", lang)}
+
+      <p className="measure faint" style={{ fontSize: "var(--step-s)", marginTop: "var(--s2)" }}>
+        {t("howToTry", lang)}
       </p>
 
       <div className="doors">
@@ -26,6 +30,33 @@ export default async function Home() {
           <br />
           <span className="door-sub">{t("doorTrackSub", lang)}</span>
         </Link>
+      </div>
+
+      {/* Synthetic Demo Case Strip */}
+      <div className="stamp" style={{ margin: "var(--s5) 0" }}>
+        <div className="row-between">
+          <span className="stamp-kicker">{t("demoStripKicker", lang)}</span>
+          <StatusChip tone="waiting" glyph="◕">
+            {t("fakeChip", lang)}
+          </StatusChip>
+        </div>
+        <div className="stamp-name">{t("demoStripOwner", lang)}</div>
+        <div className="stamp-meta">{t("demoStripRole", lang)}</div>
+        <div
+          className="row-between"
+          style={{
+            marginTop: "var(--s3)",
+            paddingTop: "var(--s2)",
+            borderTop: "1px solid var(--rule)",
+          }}
+        >
+          <span className="tnum" style={{ fontWeight: 700 }}>
+            {t("demoStripDue", lang)}
+          </span>
+          <span className="faint" style={{ fontSize: "var(--step-s)" }}>
+            {t("demoStripWait", lang)}
+          </span>
+        </div>
       </div>
 
       <p className="measure faint" style={{ fontSize: "var(--step-s)" }}>
@@ -53,3 +84,4 @@ export default async function Home() {
     </Shell>
   );
 }
+
