@@ -1,18 +1,23 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 
 export default async function Seemayein() {
   const lang = await getLang();
   return (
     <Shell lang={lang}>
-      <p className="eyebrow">सीमाएँ</p>
-      <h1 style={{ marginTop: "var(--s3)" }}>क्या सॉफ़्टवेयर ठीक कर सकता है, और क्या नहीं</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s5)" }}>
-        मिलेगी intake, डेटा खोने, त्रुटि की भाषा, दृश्यता, स्वामित्व, SLA मापन, एस्केलेशन, पूर्व-जाँच,
-        शुल्क सही होना, निर्देशित सुधार और शिकायत का मसौदा ठीक करती है। नीचे वह है जो वह जान-बूझकर
-        दावा नहीं करती — और हर दावे का असली स्क्रीन लिंक।
-      </p>
+      <PageHead
+        eyebrow="तकनीकी सीमाएँ एवं यथार्थ"
+        title="क्या सॉफ़्टवेयर ठीक कर सकता है, और क्या नहीं"
+        meta={
+          <p className="measure muted">
+            मिलेगी intake, डेटा खोने, त्रुटि की भाषा, दृश्यता, स्वामित्व, SLA मापन, एस्केलेशन, पूर्व-जाँच,
+            शुल्क सही होना, निर्देशित सुधार और शिकायत का मसौदा ठीक करती है। नीचे वह है जो वह जान-बूझकर
+            दावा नहीं करती — और हर दावे का असली स्क्रीन लिंक।
+          </p>
+        }
+      />
 
       <h2>जो प्लेटफ़ॉर्म ठीक कर सकता है</h2>
       <div className="tbl-wrap" style={{ marginTop: "var(--s3)" }}>

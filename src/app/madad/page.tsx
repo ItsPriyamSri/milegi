@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { STAGE_LABELS_HI, STAGE_LABELS_EN } from "@/server/config/schemes";
 
@@ -7,11 +8,15 @@ export default async function Madad() {
   const lang = await getLang();
   return (
     <Shell lang={lang} narrow>
-      <p className="eyebrow">मदद</p>
-      <h1 style={{ marginTop: "var(--s3)" }}>पाँच बातें जो छात्र सबसे ज़्यादा गलत समझते हैं</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s5)" }}>
-        संक्षिप्त जवाब — तीन पंक्तियों में। विस्तार के लिए संबंधित स्क्रीन पर जाएँ।
-      </p>
+      <PageHead
+        eyebrow="मदद एवं मार्गदर्शिका"
+        title="पाँच बातें जो छात्र सबसे ज़्यादा गलत समझते हैं"
+        meta={
+          <p className="measure muted">
+            संक्षिप्त जवाब — तीन पंक्तियों में। विस्तार के लिए संबंधित स्क्रीन पर जाएँ।
+          </p>
+        }
+      />
 
       <div className="stack" style={{ ["--gap" as string]: "var(--s5)" }}>
         <section className="sheet stack">
