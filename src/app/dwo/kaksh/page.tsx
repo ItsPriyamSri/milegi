@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
+import { StatSlab } from "@/ui/StatSlab";
+import { Segmented } from "@/ui/Segmented";
 import { getLang } from "@/lib/lang";
 import { requireOperator } from "@/lib/operator.server";
 import { dwoQueue } from "@/server/dwo";
@@ -26,40 +29,40 @@ export default async function DwoKaksh({
   const rows = dwoQueue(session.subjectId, active);
   const all = dwoQueue(session.subjectId, "all");
 
+  const inReviewCount = all.filter((r) => r.stage === "dwo_review").length;
+  const breachCount = all.filter((r) => r.breachDays > 0).length;
+  const flaggedCount = all.filter((r) => r.stage === "correction_required").length;
+
   return (
     <Shell lang={lang} wide>
       <div className="row-between">
-        <div>
-          <p className="eyebrow">{districtHi(session.subjectId)}</p>
-          <h1 style={{ marginTop: "var(--s2)" }}>जिला छात्रवृत्ति कतार</h1>
-        </div>
-        <Link className="btn" href="/dwo/svikriti">
+        <PageHead
+          eyebrow={`जिला समाज कल्याण अधिकारी · ${districtHi(session.subjectId)}`}
+          title="जिला छात्रवृत्ति कतार"
+        />
+        <Link className="btn btn-primary" href="/dwo/svikriti">
           स्वीकृति बैच
         </Link>
       </div>
 
-      <p className="row tnum" style={{ marginTop: "var(--s4)", gap: "var(--s4)" }}>
-        <span>कुल {all.length}</span>
-        <span>जाँच में {all.filter((r) => r.stage === "dwo_review").length}</span>
-        <span style={{ color: "var(--breach)" }}>
-          समय सीमा पार {all.filter((r) => r.breachDays > 0).length}
-        </span>
-        <span style={{ color: "var(--waiting)" }}>
-          आपत्ति {all.filter((r) => r.stage === "correction_required").length}
-        </span>
-      </p>
+      <div className="row" style={{ gap: "var(--s3)", margin: "var(--s4) 0" }}>
+        <StatSlab n={all.length} labelHi="कुल फ़ाइलें" tone="neutral" />
+        <StatSlab n={inReviewCount} labelHi="समीक्षाधीन" tone="neutral" />
+        <StatSlab n={breachCount} labelHi="समय सीमा पार" tone={breachCount > 0 ? "breach" : "neutral"} />
+        <StatSlab n={flaggedCount} labelHi="आपत्ति दर्ज" tone={flaggedCount > 0 ? "waiting" : "neutral"} />
+      </div>
 
-      <nav className="row" style={{ margin: "var(--s4) 0" }} aria-label="छाँट">
-        {FILTERS.map((f) => (
-          <Link
-            key={f.id}
-            className={`btn btn-sm${active === f.id ? " btn-primary" : ""}`}
-            href={`/dwo/kaksh?filter=${f.id}`}
-          >
-            {f.labelHi}
-          </Link>
-        ))}
-      </nav>
+      <div style={{ margin: "var(--s4) 0" }}>
+        <Segmented
+          ariaLabel="कतार फ़िल्टर"
+          value={active}
+          options={FILTERS.map((f) => ({
+            id: f.id,
+            labelHi: f.labelHi,
+            href: `/dwo/kaksh?filter=${f.id}`,
+          }))}
+        />
+      </div>
 
       <QueueTable rows={rows} />
 
@@ -70,3 +73,4 @@ export default async function DwoKaksh({
     </Shell>
   );
 }
+

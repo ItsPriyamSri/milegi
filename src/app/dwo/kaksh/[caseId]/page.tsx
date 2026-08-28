@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { requireOperator } from "@/lib/operator.server";
 import { caseView } from "@/server/cases";
@@ -31,17 +32,21 @@ export default async function DwoFile({ params }: { params: Promise<{ caseId: st
 
   return (
     <Shell lang={lang} wide>
-      <p className="eyebrow">
-        <Link href="/dwo/kaksh">← कतार</Link> · {c.id}
-        {c.registrationNo ? ` · पंजीकरण ${c.registrationNo}` : ""}
-      </p>
-      <div className="row-between" style={{ marginTop: "var(--s3)" }}>
-        <h1>{c.studentNameHi}</h1>
-        <StatusChip tone={c.breachDays > 0 ? "breach" : "waiting"}>
-          {c.stageHi}
-          {c.breachDays > 0 ? ` · ${c.breachDays} दिन पार` : ` · ${c.waitingDays} दिन`}
-        </StatusChip>
-      </div>
+      <PageHead
+        eyebrow={`जिला समाज कल्याण · ${c.id}${c.registrationNo ? ` · पंजीकरण ${c.registrationNo}` : ""}`}
+        title={c.studentNameHi}
+        meta={
+          <div className="row" style={{ gap: "var(--s3)", marginTop: "var(--s2)" }}>
+            <Link className="btn btn-quiet btn-sm" href="/dwo/kaksh">
+              ← कतार पर लौटें
+            </Link>
+            <StatusChip tone={c.breachDays > 0 ? "breach" : "waiting"}>
+              {c.stageHi}
+              {c.breachDays > 0 ? ` · ${c.breachDays} दिन पार` : ` · ${c.waitingDays} दिन`}
+            </StatusChip>
+          </div>
+        }
+      />
 
       <div className="split split-side" style={{ marginTop: "var(--s5)" }}>
         <div className="stack">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
 import { getLang } from "@/lib/lang";
 import { requireOperator } from "@/lib/operator.server";
 import { dwoQueue } from "@/server/dwo";
@@ -35,14 +36,23 @@ export default async function Svikriti({
 
   return (
     <Shell lang={lang} wide>
-      <p className="eyebrow">
-        <Link href="/dwo/kaksh">← कतार</Link> · {districtHi(session.subjectId)}
-      </p>
-      <h1 style={{ marginTop: "var(--s3)" }}>स्वीकृति बैच</h1>
-      <p className="measure muted" style={{ margin: "var(--s3) 0 var(--s5)" }}>
-        केवल सत्यापित फ़ाइलें भुगतान बैच में जाती हैं। आंशिक इनकार कारण सहित यहीं दिखते हैं — चुपचाप
-        गिराए नहीं जाते।
-      </p>
+      <PageHead
+        eyebrow={`जिला समाज कल्याण · ${districtHi(session.subjectId)}`}
+        title="स्वीकृति बैच (Sanction Batch)"
+        meta={
+          <div className="stack" style={{ ["--gap" as string]: "var(--s2)" }}>
+            <p className="measure muted">
+              केवल सत्यापित फ़ाइलें भुगतान बैच में जाती हैं। आंशिक इनकार कारण सहित यहीं दिखते हैं — चुपचाप
+              गिराए नहीं जाते।
+            </p>
+            <p>
+              <Link className="btn btn-quiet btn-sm" href="/dwo/kaksh">
+                ← कतार पर लौटें
+              </Link>
+            </p>
+          </div>
+        }
+      />
       {rows.length === 0 ? (
         <p className="sheet muted">
           कोई सत्यापित फ़ाइल नहीं। पहले{" "}

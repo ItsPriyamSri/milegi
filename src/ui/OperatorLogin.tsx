@@ -35,7 +35,7 @@ export function OperatorLogin({
   }
 
   return (
-    <form className="sheet stack" onSubmit={submit}>
+    <form className="sheet stack" style={{ maxWidth: "420px", margin: "0 auto" }} onSubmit={submit}>
       <div className="field">
         <label htmlFor="code">{role === "institute" ? "संस्थान" : "जिला"}</label>
         <select id="code" value={code} onChange={(e) => setCode(e.target.value)}>

@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Shell } from "@/ui/Shell";
+import { PageHead } from "@/ui/PageHead";
+import { StatSlab } from "@/ui/StatSlab";
+import { Segmented } from "@/ui/Segmented";
 import { getLang } from "@/lib/lang";
 import { requireOperator } from "@/lib/operator.server";
 import { instituteQueue } from "@/server/institute";
@@ -28,43 +31,45 @@ export default async function Kaksh({
   const all = instituteQueue(session.subjectId, "all");
   const inst = getInstitute(session.subjectId);
 
+  const breachCount = all.filter((r) => r.breachDays > 0).length;
+  const hardcopyCount = all.filter((r) => r.stage === "institute_review" && !r.hardCopyReceived).length;
+
   return (
     <Shell lang={lang} wide>
       <div className="row-between">
-        <div>
-          <p className="eyebrow">{inst?.nameHi}</p>
-          <h1 style={{ marginTop: "var(--s2)" }}>छात्रवृत्ति प्रकोष्ठ</h1>
-        </div>
+        <PageHead
+          eyebrow={inst?.nameHi}
+          title="छात्रवृत्ति प्रकोष्ठ · कतार"
+          meta={
+            rows[0]?.dueAt ? (
+              <span className="faint tnum">
+                अग्रसारण की अंतिम तारीख़: {fmtDate(rows[0]?.dueAt)}
+              </span>
+            ) : undefined
+          }
+        />
         <Link className="btn" href="/sansthan/master">
           मास्टर डेटा (कोर्स और शुल्क)
         </Link>
       </div>
 
-      <p className="row tnum" style={{ marginTop: "var(--s4)", gap: "var(--s4)" }}>
-        <span>कुल {all.length}</span>
-        <span style={{ color: "var(--breach)" }}>
-          समय सीमा पार {all.filter((r) => r.breachDays > 0).length}
-        </span>
-        <span style={{ color: "var(--waiting)" }}>
-          हार्ड कॉपी बाकी{" "}
-          {all.filter((r) => r.stage === "institute_review" && !r.hardCopyReceived).length}
-        </span>
-        <span className="faint">
-          अग्रसारण की अंतिम तारीख़ {fmtDate(rows[0]?.dueAt ?? null)}
-        </span>
-      </p>
+      <div className="row" style={{ gap: "var(--s3)", margin: "var(--s4) 0" }}>
+        <StatSlab n={all.length} labelHi="कुल आवेदन" tone="neutral" />
+        <StatSlab n={breachCount} labelHi="समय सीमा पार" tone={breachCount > 0 ? "breach" : "neutral"} />
+        <StatSlab n={hardcopyCount} labelHi="हार्ड कॉपी लंबित" tone={hardcopyCount > 0 ? "waiting" : "neutral"} />
+      </div>
 
-      <nav className="row" style={{ margin: "var(--s4) 0" }} aria-label="छाँट">
-        {FILTERS.map((f) => (
-          <Link
-            key={f.id}
-            className={`btn btn-sm${active === f.id ? " btn-primary" : ""}`}
-            href={`/sansthan/kaksh?filter=${f.id}`}
-          >
-            {f.labelHi}
-          </Link>
-        ))}
-      </nav>
+      <div style={{ margin: "var(--s4) 0" }}>
+        <Segmented
+          ariaLabel="कतार फ़िल्टर"
+          value={active}
+          options={FILTERS.map((f) => ({
+            id: f.id,
+            labelHi: f.labelHi,
+            href: `/sansthan/kaksh?filter=${f.id}`,
+          }))}
+        />
+      </div>
 
       <QueueTable rows={rows} />
 
@@ -75,3 +80,4 @@ export default async function Kaksh({
     </Shell>
   );
 }
+
