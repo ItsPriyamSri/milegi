@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { Callout, Money, StatusChip, type Tone } from "@/ui/bits";
 import { fmtDate, fmtDays, fmtWeekday } from "@/lib/format";
-import { STAGE_LABELS_HI } from "@/server/config/schemes";
-import type { Stage } from "@/server/types";
-
-type Owner = { nameHi: string; designationHi: string; orgHi: string; contactHint?: string } | null;
+import type { Lang } from "@/lib/i18n";
 
 export const STAGE_TONE: Record<string, Tone> = {
   draft: "waiting",
@@ -37,6 +34,7 @@ export function AlertList({
     detailHi: string;
     detailEn?: string;
     actionHi: string | null;
+    actionEn?: string | null;
     actionHref: string | null;
     dueAt: string | null;
   }[];
@@ -60,11 +58,11 @@ export function AlertList({
           ) : null}
           {a.actionHi ? (
             <p style={{ marginTop: "var(--s2)", fontSize: "var(--step-s)" }}>
-              <strong>करना है:</strong> {a.actionHi}
+              <strong>{isEn ? "To do:" : "करना है:"}</strong> {isEn ? a.actionEn ?? a.actionHi : a.actionHi}
               {a.actionHref ? (
                 <>
                   {" "}
-                  <Link href={a.actionHref.replace("[caseId]", caseId)}>खोलें →</Link>
+                  <Link href={a.actionHref.replace("[caseId]", caseId)}>{isEn ? "Open →" : "खोलें →"}</Link>
                 </>
               ) : null}
             </p>
@@ -101,33 +99,44 @@ export function CaseHead({
 
 export function Timeline({
   events,
+  lang = "en",
 }: {
-  events: { at: string; type: string; actor: { nameHi: string; role: string }; summaryHi: string }[];
+  events: {
+    at: string;
+    type: string;
+    actor: { nameHi: string; nameEn?: string; role: string };
+    summaryHi: string;
+    summaryEn?: string;
+  }[];
+  lang?: Lang;
 }) {
+  const isEn = lang === "en";
   return (
     <div className="tbl-wrap">
       <table className="tbl">
         <caption className="eyebrow" style={{ textAlign: "left", padding: "var(--s3)" }}>
-          फ़ाइल का इतिहास — क्या हुआ, कब, और किसने किया
+          {isEn
+            ? "File history — what happened, when, and who did it"
+            : "फ़ाइल का इतिहास — क्या हुआ, कब, और किसने किया"}
         </caption>
         <thead>
           <tr>
-            <th scope="col">तारीख़</th>
-            <th scope="col">किसने</th>
-            <th scope="col">क्या हुआ</th>
+            <th scope="col">{isEn ? "Date" : "तारीख़"}</th>
+            <th scope="col">{isEn ? "Who" : "किसने"}</th>
+            <th scope="col">{isEn ? "What happened" : "क्या हुआ"}</th>
           </tr>
         </thead>
         <tbody>
           {events.map((e, i) => (
             <tr key={`${e.at}-${i}`}>
-              <td className="tnum nowrap">{fmtDate(e.at)}</td>
+              <td className="tnum nowrap">{fmtDate(e.at, lang)}</td>
               <td>
-                {e.actor.nameHi}
+                {isEn ? e.actor.nameEn ?? e.actor.nameHi : e.actor.nameHi}
                 {e.actor.role === "treasury" || e.type === "auto_forwarded" || e.type === "escalated" ? (
-                  <span className="faint"> · स्वचालित</span>
+                  <span className="faint">{isEn ? " · automatic" : " · स्वचालित"}</span>
                 ) : null}
               </td>
-              <td>{e.summaryHi}</td>
+              <td>{isEn ? e.summaryEn ?? e.summaryHi : e.summaryHi}</td>
             </tr>
           ))}
         </tbody>

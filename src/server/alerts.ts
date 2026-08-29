@@ -106,6 +106,7 @@ export function deriveAlerts(c: Case, nowIso: string = iso()): Alert[] {
           : ""),
       detailEn: `Held by ${c.owner.nameHi}; the deadline was ${c.dueAt.slice(0, 10)}, ${late} days ago.`,
       actionHi: escalated ? "शिकायत का मसौदा देखें" : "अनुस्मारक भेजें",
+      actionEn: escalated ? "See the grievance draft" : "Send a reminder",
       actionHref: escalated ? `/shikayat/${c.id}` : null,
       dueAt: c.dueAt,
     });

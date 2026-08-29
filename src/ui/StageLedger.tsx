@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { fmtDate, fmtDays } from "@/lib/format";
-import { STAGE_LABELS_HI } from "@/server/config/schemes";
+import type { Lang } from "@/lib/i18n";
+import { STAGE_LABELS_EN, STAGE_LABELS_HI } from "@/server/config/schemes";
 import type { Stage } from "@/server/types";
 
 const CHAIN_BASE: Stage[] = [
@@ -25,6 +26,7 @@ export function StageLedger({
   breachDays,
   calendar,
   events,
+  lang = "en",
 }: {
   stage: Stage;
   hasUniversity: boolean;
@@ -38,7 +40,10 @@ export function StageLedger({
     disbursementTo: string;
   };
   events: { at: string; type: string }[];
+  lang?: Lang;
 }): JSX.Element {
+  const isEn = lang === "en";
+  const labels = isEn ? STAGE_LABELS_EN : STAGE_LABELS_HI;
   const chain = chainFor(hasUniversity);
   const terminalIndex =
     stage === "paid"
@@ -58,13 +63,22 @@ export function StageLedger({
     if (e.type === "created") entered.set("draft", e.at);
   }
 
-  const FUTURE_NOTE: Partial<Record<Stage, string>> = {
-    institute_review: `संस्थान को ${fmtDate(calendar.instituteForwardDeadline)} तक अग्रसारित करना है`,
-    dwo_review: `जिला सत्यापन विंडो ${fmtDate(calendar.dwoWindowEnd)} तक`,
-    sanctioned: `भुगतान अवधि ${fmtDate(calendar.disbursementFrom)} – ${fmtDate(calendar.disbursementTo)}`,
-    pfms_processing: "PFMS बैच में 3–7 कार्यदिवस",
-    paid: "आधार से जुड़े खाते में",
-  };
+  const d = (iso: string) => fmtDate(iso, lang);
+  const FUTURE_NOTE: Partial<Record<Stage, string>> = isEn
+    ? {
+        institute_review: `Institute must forward by ${d(calendar.instituteForwardDeadline)}`,
+        dwo_review: `District verification window until ${d(calendar.dwoWindowEnd)}`,
+        sanctioned: `Payment window ${d(calendar.disbursementFrom)} – ${d(calendar.disbursementTo)}`,
+        pfms_processing: "3–7 working days in the PFMS batch",
+        paid: "To the Aadhaar-linked account",
+      }
+    : {
+        institute_review: `संस्थान को ${d(calendar.instituteForwardDeadline)} तक अग्रसारित करना है`,
+        dwo_review: `जिला सत्यापन विंडो ${d(calendar.dwoWindowEnd)} तक`,
+        sanctioned: `भुगतान अवधि ${d(calendar.disbursementFrom)} – ${d(calendar.disbursementTo)}`,
+        pfms_processing: "PFMS बैच में 3–7 कार्यदिवस",
+        paid: "आधार से जुड़े खाते में",
+      };
 
   return (
     <ol className="ledger">
@@ -80,24 +94,29 @@ export function StageLedger({
         const at = entered.get(s);
         return (
           <li key={s} data-state={state}>
-            <p className="ledger-title">{STAGE_LABELS_HI[s]}</p>
+            <p className="ledger-title">{labels[s]}</p>
             {isCurrent ? (
               <p className="muted tnum">
-                {fmtDate(stageEnteredAt)} से{dueAt ? ` · समय सीमा ${fmtDate(dueAt)}` : ""}
-                {breachDays > 0 ? ` · ${fmtDays(breachDays)} पार` : ""}
+                {isEn
+                  ? `Since ${d(stageEnteredAt)}${dueAt ? ` · deadline ${d(dueAt)}` : ""}${
+                      breachDays > 0 ? ` · ${fmtDays(breachDays, "en")} past` : ""
+                    }`
+                  : `${d(stageEnteredAt)} से${dueAt ? ` · समय सीमा ${d(dueAt)}` : ""}${
+                      breachDays > 0 ? ` · ${fmtDays(breachDays, "hi")} पार` : ""
+                    }`}
               </p>
             ) : at ? (
-              <p className="muted tnum">{fmtDate(at)}</p>
+              <p className="muted tnum">{d(at)}</p>
             ) : (
-              <p className="faint">{FUTURE_NOTE[s] ?? "आगे"}</p>
+              <p className="faint">{FUTURE_NOTE[s] ?? (isEn ? "Next" : "आगे")}</p>
             )}
           </li>
         );
       })}
       {stage === "rejected" || stage === "lapsed" ? (
         <li data-state="breach">
-          <p className="ledger-title">{STAGE_LABELS_HI[stage]}</p>
-          <p className="muted tnum">{fmtDate(stageEnteredAt)}</p>
+          <p className="ledger-title">{labels[stage]}</p>
+          <p className="muted tnum">{d(stageEnteredAt)}</p>
         </li>
       ) : null}
     </ol>

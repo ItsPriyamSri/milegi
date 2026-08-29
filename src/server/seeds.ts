@@ -741,8 +741,11 @@ export const SEED_CASES: any[] = [
     owner: {
       role: "institute",
       nameHi: "श्री आर. के. वर्मा",
+      nameEn: "Shri R. K. Verma",
       designationHi: "छात्रवृत्ति लिपिक",
+      designationEn: "Scholarship clerk",
       orgHi: "राजकीय महाविद्यालय, कल्याणपुर",
+      orgEn: "Government Degree College, Kalyanpur",
     },
     dueAt: P("2026-09-12"),
     form: {
@@ -770,6 +773,7 @@ export const SEED_CASES: any[] = [
       months: 10,
       total: 15500,
       basisHi: "गैर-वापसी शुल्क ₹8,500 + रखरखाव भत्ता ₹7,000",
+      basisEn: "Non-refundable fee ₹8,500 + maintenance ₹7,000",
     },
     hardCopy: { dueAt: P("2026-08-20"), receivedAt: P("2026-08-16") },
     attendancePercent: 82,
@@ -779,7 +783,7 @@ export const SEED_CASES: any[] = [
     escalations: [],
     grievanceDraftAt: null,
     events: [
-      { at: P("2026-08-14"), type: "locked", actor: { role: "student", nameHi: "प्रिया शर्मा", designationHi: "छात्र", orgHi: "आवेदन" }, summaryHi: "आवेदन लॉक किया गया", summaryEn: "Application locked" },
+      { at: P("2026-08-14"), type: "locked", actor: { role: "student", nameHi: "प्रिया शर्मा", nameEn: "Priya Sharma", designationHi: "छात्र", orgHi: "आवेदन" }, summaryHi: "आवेदन लॉक किया गया", summaryEn: "Application locked" },
     ],
     updatedAt: P("2026-08-16"),
   },

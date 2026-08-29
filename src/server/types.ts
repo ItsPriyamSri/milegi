@@ -177,6 +177,7 @@ export type Alert = {
   detailHi: string;
   detailEn: string;
   actionHi: string | null;
+  actionEn?: string | null;
   actionHref: string | null;
   dueAt: string | null;
 };

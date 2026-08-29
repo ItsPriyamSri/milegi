@@ -36,6 +36,7 @@ test("a stage past its deadline produces a breach alert naming the owner and the
   assert.equal(a.severity, "danger");
   assert.match(a.detailHi, /श्री आर\. के\. वर्मा/);
   assert.match(a.detailHi, /4 दिन/);
+  assert.equal(a.actionEn, "Send a reminder");
 });
 
 test("escalate records an escalation, writes an outbox message, and does not reset the wait", () => {

@@ -44,9 +44,9 @@ export default async function CaseFile({
   return (
     <Shell lang={lang}>
       <DutyStrip
-        stageHi={c.stageHi}
+        stageHi={isEn ? c.stageEn : c.stageHi}
         tone={tone}
-        ownerNameHi={c.owner ? c.owner.nameHi : null}
+        ownerNameHi={c.owner ? (isEn ? c.owner.nameEn ?? c.owner.nameHi : c.owner.nameHi) : null}
         dueAt={c.dueAt}
         action={dutyNavAction}
       />
@@ -225,7 +225,7 @@ export default async function CaseFile({
           ) : null}
 
           <section className="stack">
-            <h2>फ़ाइल कहाँ तक पहुँची · Stage Ledger</h2>
+            <h2>{isEn ? "Stage Ledger / फ़ाइल कहाँ तक पहुँची" : "फ़ाइल कहाँ तक पहुँची · Stage Ledger"}</h2>
             <StageLedger
               stage={c.stage}
               hasUniversity={Boolean(c.affiliatedTo)}
@@ -234,6 +234,7 @@ export default async function CaseFile({
               breachDays={c.breachDays}
               calendar={c.calendar}
               events={c.events}
+              lang={lang}
             />
           </section>
 
@@ -308,7 +309,7 @@ export default async function CaseFile({
           </section>
 
           <section className="stack">
-            <Timeline events={c.events} />
+            <Timeline events={c.events} lang={lang} />
           </section>
         </div>
 

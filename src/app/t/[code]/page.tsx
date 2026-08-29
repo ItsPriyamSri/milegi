@@ -82,14 +82,14 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
   return (
     <Shell lang={lang} narrow>
       <DutyStrip
-        stageHi={c.stageHi}
+        stageHi={isEn ? c.stageEn : c.stageHi}
         tone={tone}
-        ownerNameHi={c.owner ? c.owner.nameHi : null}
+        ownerNameHi={c.owner ? (isEn ? c.owner.nameEn ?? c.owner.nameHi : c.owner.nameHi) : null}
         dueAt={c.dueAt}
       />
 
       <PageHead
-        eyebrow={`PUBLIC TRACKER · ${c.trackHi} · ${c.cycleHi}`}
+        eyebrow={`PUBLIC TRACKER · ${isEn ? c.trackEn : c.trackHi} · ${isEn ? c.cycleEn : c.cycleHi}`}
         title={isEn ? "Public Application Status" : "फ़ाइल की सार्वजनिक स्थिति"}
         meta={
           <p className="measure muted">
@@ -130,7 +130,7 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
           <Money
             amount={c.estimate.total}
             label={isEn ? "Estimated Benefit (Tuition + Maintenance)" : "अनुमानित लाभ"}
-            basis={c.estimate.basisHi}
+            basis={isEn ? c.estimate.basisEn ?? c.estimate.basisHi : c.estimate.basisHi}
           />
         </div>
 
@@ -149,7 +149,7 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
         ) : null}
 
         <section className="stack">
-          <h2>Stage Ledger / फ़ाइल की स्थिति</h2>
+          <h2>{isEn ? "Stage Ledger / फ़ाइल की स्थिति" : "फ़ाइल की स्थिति / Stage Ledger"}</h2>
           <StageLedger
             stage={c.stage}
             hasUniversity={c.events.some((e) => e.type === "institute_forwarded")}
@@ -158,11 +158,12 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
             breachDays={c.breachDays}
             calendar={calendar}
             events={c.events}
+            lang={lang}
           />
         </section>
 
         <section className="stack">
-          <Timeline events={c.events} />
+          <Timeline events={c.events} lang={lang} />
         </section>
       </div>
     </Shell>
