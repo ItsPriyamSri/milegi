@@ -89,7 +89,9 @@ export default async function Home() {
                 DEMO CREDENTIALS
               </span>
               <span style={{ fontSize: "var(--step-s)", color: "var(--ink-muted)", fontWeight: 500 }}>
-                OTP prints on screen · Aadhaar <code className="mono">000012340001</code> · Operator PIN <code className="mono">1234</code>
+                OTP prints on screen · Aadhaar <code className="mono">000012340001</code> · Demo OTR{" "}
+                <code className="mono">UP26-8000100001</code> (mobile <code className="mono">9876543210</code>) · PIN{" "}
+                <code className="mono">1234</code>
               </span>
             </div>
 

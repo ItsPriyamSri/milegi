@@ -19,7 +19,7 @@ export class ApiFailure extends Error {
 const NETWORK: ApiError = {
   code: "NETWORK",
   hi: "नेटवर्क नहीं मिल रहा। आपका ड्राफ़्ट इस फ़ोन पर सुरक्षित है — कनेक्शन आने पर अपने आप सिंक हो जाएगा।",
-  en: "No network. Your draft is safe on this phone and will sync when the connection returns.",
+  en: "No network. Your draft is safe on this device and will sync when the connection returns.",
   retryable: true,
   ref: "NETWORK",
 };

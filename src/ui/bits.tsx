@@ -105,7 +105,7 @@ export type ApiErrorShape = {
 /** The only error surface in the product. Never a status code, never a stack, never an upstream string. */
 export function ErrorNote({
   error,
-  lang = "hi",
+  lang = "en",
   onRetryHref,
   retryLabel,
   refLabel,
@@ -121,7 +121,8 @@ export function ErrorNote({
     <div className="callout" data-tone="danger" role="alert">
       <p className="callout-title">{text}</p>
       <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-        {refLabel ?? "संदर्भ"}: <span className="mono">{error.ref ?? error.code}</span>
+        {refLabel ?? (lang === "en" ? "Reference" : "संदर्भ")}:{" "}
+        <span className="mono">{error.ref ?? error.code}</span>
       </p>
       {error.retryable && onRetryHref ? (
         <p style={{ marginTop: "var(--s2)" }}>

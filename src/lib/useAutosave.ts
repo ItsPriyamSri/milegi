@@ -80,12 +80,17 @@ export function useAutosave(caseId: string, initial: Record<string, unknown>) {
   );
 
   useEffect(() => {
-    // No beacon on unload: sendBeacon can only POST, and the draft endpoint is a PATCH. The phone copy
-    // written on every keystroke is the real guarantee, so a hard close loses nothing.
+    function replay() {
+      void flush();
+    }
+    window.addEventListener("online", replay);
+    document.addEventListener("visibilitychange", replay);
     return () => {
+      window.removeEventListener("online", replay);
+      document.removeEventListener("visibilitychange", replay);
       if (timer.current) clearTimeout(timer.current);
     };
-  }, []);
+  }, [flush]);
 
   return { values, update, saveState, flush, lastError, fieldErrors, serverExtras };
 }

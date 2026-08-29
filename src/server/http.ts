@@ -58,23 +58,32 @@ export function handler(fn: (req: Request, ctx: Ctx) => Promise<Response>) {
   };
 }
 
-export function str(v: unknown, field: string, max = 120): string {
+type FieldName = string | { en: string; hi: string };
+
+function fieldEn(field: FieldName): string {
+  return typeof field === "string" ? field : field.en;
+}
+function fieldHi(field: FieldName): string {
+  return typeof field === "string" ? field : field.hi;
+}
+
+export function str(v: unknown, field: FieldName, max = 120): string {
   if (typeof v !== "string" || v.trim().length === 0) {
     throw new AppError("FIELD_REQUIRED", {
-      hi: `${field} भरना ज़रूरी है।`,
-      en: `${field} is required.`,
+      hi: `${fieldHi(field)} भरना ज़रूरी है।`,
+      en: `${fieldEn(field)} is required.`,
       status: 422,
     });
   }
   return v.trim().slice(0, max);
 }
 
-export function num(v: unknown, field: string): number {
+export function num(v: unknown, field: FieldName): number {
   const n = Number(v);
   if (!Number.isFinite(n)) {
     throw new AppError("FIELD_REQUIRED", {
-      hi: `${field} संख्या में भरें।`,
-      en: `${field} must be a number.`,
+      hi: `${fieldHi(field)} संख्या में भरें।`,
+      en: `${fieldEn(field)} must be a number.`,
       status: 422,
     });
   }

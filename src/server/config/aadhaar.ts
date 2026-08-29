@@ -9,3 +9,6 @@ export function isDemoAadhaar(v: string): boolean {
 
 export const DEMO_AADHAAR_MESSAGE_HI =
   "यह प्रोटोटाइप असली आधार नंबर स्वीकार नहीं करता — 0000 से शुरू होने वाला डेमो नंबर डालें";
+export const DEMO_AADHAAR_MESSAGE_EN =
+  "This prototype does not accept a real Aadhaar — enter a 12-digit demo number starting with 0000";
+export const DEMO_AADHAAR_MESSAGE = `${DEMO_AADHAAR_MESSAGE_EN} / ${DEMO_AADHAAR_MESSAGE_HI}`;

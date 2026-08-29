@@ -17,11 +17,11 @@ export function NewsTicker(): JSX.Element {
         <div className="row" style={{ gap: "var(--s2)" }}>
           <span className="pulse-dot" style={{ background: "var(--brand-gold)" }} />
           <span className="eyebrow" style={{ color: "var(--brand-gold)", fontWeight: 800 }}>
-            LATEST ANNOUNCEMENTS & TIMETABLE NOTICES (2026-27)
+            SESSION 2026-27 · PUBLISHED CALENDAR (SYNTHETIC DEMO)
           </span>
         </div>
         <span className="chip" data-tone="waiting" style={{ fontSize: "0.75rem" }}>
-          OFFICIAL BULLETIN
+          DEMO NOTICE
         </span>
       </div>
 

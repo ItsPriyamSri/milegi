@@ -18,8 +18,8 @@ export const POST = handler(async (req) => {
     });
   }
   const body = await readJson(req);
-  const track = str(body.track, "वर्ग", 20);
-  const cycle = str(body.cycle, "प्रकार", 10);
+  const track = str(body.track, { en: "Scheme track", hi: "वर्ग" }, 20);
+  const cycle = str(body.cycle, { en: "Application type", hi: "प्रकार" }, 10);
   if (!TRACKS.includes(track) || (cycle !== "fresh" && cycle !== "renewal")) {
     throw new AppError("BAD_TRACK", {
       hi: "वर्ग या आवेदन का प्रकार गलत है।",
@@ -30,8 +30,8 @@ export const POST = handler(async (req) => {
   let created = createCase(profile, {
     track: track as TrackId,
     cycle: cycle as Cycle,
-    instituteId: str(body.instituteId, "संस्थान", 60),
-    courseCode: str(body.courseCode, "कोर्स", 30),
+    instituteId: str(body.instituteId, { en: "Institute", hi: "संस्थान" }, 60),
+    courseCode: str(body.courseCode, { en: "Course", hi: "कोर्स" }, 30),
   });
   if (cycle === "renewal") created = prefillFromLastYear(profile, created);
   created = runPreflightOn(created, profile);

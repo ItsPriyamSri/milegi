@@ -1,6 +1,6 @@
 import { handler, ok } from "@/server/http";
 import { allInstitutes } from "@/server/store";
-import { districtHi } from "@/server/config/districts";
+import { districtEn, districtHi } from "@/server/config/districts";
 
 export const GET = handler(async (req) => {
   const url = new URL(req.url);
@@ -9,9 +9,9 @@ export const GET = handler(async (req) => {
   const list = allInstitutes()
     .filter((i) => (kind ? i.kind === kind : true))
     .filter((i) =>
-      q.length === 0
+      q.length === 0 || i.id === "inst-other"
         ? true
-        : `${i.nameHi} ${i.nameEn} ${districtHi(i.districtCode)}`.toLowerCase().includes(q),
+        : `${i.nameHi} ${i.nameEn} ${districtHi(i.districtCode)} ${districtEn(i.districtCode)}`.toLowerCase().includes(q),
     )
     .map((i) => ({
       id: i.id,
@@ -19,10 +19,12 @@ export const GET = handler(async (req) => {
       nameEn: i.nameEn,
       districtCode: i.districtCode,
       districtHi: districtHi(i.districtCode),
+      districtEn: districtEn(i.districtCode),
       kind: i.kind,
       affiliatedTo: i.affiliatedTo,
       masterDataPublishedAt: i.masterDataPublishedAt,
       clerkNameHi: i.clerk.nameHi,
+      clerkNameEn: i.clerk.nameEn ?? i.clerk.nameHi,
       courses: i.courses.map((c) => ({
         code: c.code,
         nameHi: c.nameHi,

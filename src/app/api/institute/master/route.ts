@@ -6,7 +6,7 @@ import { getInstitute } from "@/server/store";
 export const POST = handler(async (req) => {
   const session = await requireRole("institute");
   const body = await readJson(req);
-  const code = str(body.code, "कोर्स कोड", 30);
+  const code = str(body.code, { en: "Course code", hi: "कोर्स कोड" }, 30);
   const clerk = getInstitute(session.subjectId)!.clerk;
   const inst =
     body.publish === false
@@ -15,7 +15,7 @@ export const POST = handler(async (req) => {
           session.subjectId,
           {
             code,
-            tuition: num(body.tuition, "गैर-वापसी योग्य शुल्क"),
+            tuition: num(body.tuition, { en: "Non-refundable fee", hi: "गैर-वापसी योग्य शुल्क" }),
             ...(typeof body.nameHi === "string" && body.nameHi.trim()
               ? { nameHi: body.nameHi.trim() }
               : {}),

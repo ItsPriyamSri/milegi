@@ -1,6 +1,6 @@
 import type { Case, Cycle, TrackId } from "./types";
 import { SCHEMES, type SectionId } from "./config/schemes";
-import { DEMO_AADHAAR_MESSAGE_HI, isDemoAadhaar } from "./config/aadhaar";
+import { DEMO_AADHAAR_MESSAGE, isDemoAadhaar } from "./config/aadhaar";
 
 export type FieldSpec = {
   name: string;
@@ -32,7 +32,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     section: "identity",
     maxLen: 12,
     readOnly: true,
-    validate: (v) => (isDemoAadhaar(String(v)) ? null : DEMO_AADHAAR_MESSAGE_HI),
+    validate: (v) => (isDemoAadhaar(String(v)) ? null : DEMO_AADHAAR_MESSAGE),
   },
   otr: {
     name: "otr",
@@ -73,7 +73,8 @@ export const FIELDS: Record<string, FieldSpec> = {
     type: "number",
     section: "education",
     requiredWhen: always,
-    validate: (v) => (Number(v) >= 1 && Number(v) <= 6 ? null : "वर्ष 1 से 6 के बीच होना चाहिए"),
+    validate: (v) =>
+      Number(v) >= 1 && Number(v) <= 6 ? null : "Year of study must be between 1 and 6 / वर्ष 1 से 6 के बीच होना चाहिए",
   },
   admissionDate: {
     name: "admissionDate",
@@ -151,7 +152,8 @@ export const FIELDS: Record<string, FieldSpec> = {
     requiredWhen: ({ cycle }) => cycle === "renewal",
     validate: (v, form) => {
       const total = Number(form.marksTotal ?? 0);
-      if (total > 0 && Number(v) > total) return "प्राप्तांक कुल अंकों से अधिक नहीं हो सकते";
+      if (total > 0 && Number(v) > total)
+        return "Marks cannot exceed the total / प्राप्तांक कुल अंकों से अधिक नहीं हो सकते";
       return null;
     },
   },
@@ -166,7 +168,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     requiredWhen: ({ cycle }) => cycle === "renewal",
     validate: (v) =>
       Number(v) > 0 && Number(v) < 50
-        ? "यह CGPA जैसा दिख रहा है। कुल अंक भरें (जैसे 600 या 1200), CGPA नहीं।"
+        ? "This looks like CGPA. Enter full-year total marks (e.g. 600 or 1200). / यह CGPA जैसा दिख रहा है। कुल अंक भरें।"
         : null,
   },
   semesterCombined: {
@@ -185,7 +187,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     type: "number",
     section: "family_docs",
     requiredWhen: always,
-    validate: (v) => (Number(v) >= 0 ? null : "आय ऋणात्मक नहीं हो सकती"),
+    validate: (v) => (Number(v) >= 0 ? null : "Income cannot be negative / आय ऋणात्मक नहीं हो सकती"),
   },
   rationCard: {
     name: "rationCard",
@@ -277,29 +279,34 @@ export function validateField(
   form: Record<string, unknown>,
 ): string | null {
   const spec = FIELDS[name];
-  if (!spec) return "अज्ञात फ़ील्ड";
-  if (spec.maxLen && String(value).length > spec.maxLen) return `अधिकतम ${spec.maxLen} अक्षर`;
+  if (!spec) return "Unknown field / अज्ञात फ़ील्ड";
+  if (spec.maxLen && String(value).length > spec.maxLen)
+    return `Maximum ${spec.maxLen} characters / अधिकतम ${spec.maxLen} अक्षर`;
   if (spec.options && value !== "" && value !== null && value !== undefined) {
-    if (!spec.options.some((o) => o.value === String(value))) return "सूची में से चुनें";
+    if (!spec.options.some((o) => o.value === String(value))) return "Choose from the list / सूची में से चुनें";
   }
   return spec.validate ? spec.validate(value, form) : null;
 }
 
-export function validateAll(c: Case): { field: string; messageHi: string }[] {
+export function validateAll(c: Case): { field: string; messageHi: string; messageEn: string }[] {
   const scheme = SCHEMES[c.track];
-  const out: { field: string; messageHi: string }[] = [];
+  const out: { field: string; messageHi: string; messageEn: string }[] = [];
   for (const spec of Object.values(FIELDS)) {
     if (!scheme.sections.includes(spec.section)) continue;
     if (spec.section === "previous_result" && c.cycle !== "renewal" && !scheme.needsMarks) continue;
     const required = isRequired(spec, { track: c.track, cycle: c.cycle });
     const value = c.form[spec.name];
     if (required && (value === undefined || value === null || value === "" || value === false)) {
-      out.push({ field: spec.name, messageHi: `${spec.labelHi} भरना ज़रूरी है` });
+      out.push({
+        field: spec.name,
+        messageHi: `${spec.labelHi} भरना ज़रूरी है`,
+        messageEn: `${spec.labelEn} is required`,
+      });
       continue;
     }
     if (value !== undefined && value !== null && value !== "") {
       const msg = validateField(spec.name, value, c.form);
-      if (msg) out.push({ field: spec.name, messageHi: msg });
+      if (msg) out.push({ field: spec.name, messageHi: msg, messageEn: msg });
     }
   }
   return out;

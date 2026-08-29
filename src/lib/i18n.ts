@@ -87,14 +87,14 @@ export const DICT: Record<string, Entry> = {
   errRef: { hi: "संदर्भ", en: "Reference" },
   errDraftSafe: {
     hi: "आपका ड्राफ़्ट इस फ़ोन पर सुरक्षित है।",
-    en: "Your draft is safe on this phone.",
+    en: "Your draft is safe on this device.",
   },
   notFound: {
     hi: "यह पता नहीं मिला। लिंक अधूरा हो सकता है।",
     en: "That address does not exist. The link may be incomplete.",
   },
 
-  saveLocal: { hi: "इस फोन पर सेव है", en: "Saved on this phone" },
+  saveLocal: { hi: "इस फोन पर सेव है", en: "Saved on this device" },
   savePending: { hi: "अभी सिंक नहीं हुआ", en: "Not synced yet" },
   saveSaved: { hi: "सेव हो गया", en: "Saved" },
 

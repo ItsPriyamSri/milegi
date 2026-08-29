@@ -3,7 +3,7 @@ import { iso } from "./clock";
 import { AppError } from "./errors";
 import { findProfileByAadhaar, findProfileByMobile, findProfileByOtr, putProfile } from "./store";
 import { BOARD_REGISTRY } from "./seeds";
-import { DEMO_AADHAAR_MESSAGE_HI, isDemoAadhaar } from "./config/aadhaar";
+import { DEMO_AADHAAR_MESSAGE_EN, DEMO_AADHAAR_MESSAGE_HI, isDemoAadhaar } from "./config/aadhaar";
 import { fetchDigilockerProfile } from "./external/digilocker";
 import { verifyEkyc } from "./external/ekyc";
 import { normalizeMobile } from "./mobile";
@@ -34,7 +34,7 @@ export function mintOtr(input: MintInput): { profile: Profile; duplicateOf?: Pro
   if (!isDemoAadhaar(aadhaarDemo)) {
     throw new AppError("AADHAAR_NOT_DEMO", {
       hi: DEMO_AADHAAR_MESSAGE_HI,
-      en: "This prototype only accepts demo Aadhaar numbers beginning 0000.",
+      en: DEMO_AADHAAR_MESSAGE_EN,
       status: 422,
     });
   }

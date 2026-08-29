@@ -10,23 +10,33 @@ type RouteResult = {
   track: string;
   cycle: "fresh" | "renewal";
   reasonHi: string;
+  reasonEn?: string;
   recoveryHi: string;
+  recoveryEn?: string;
   warnHi: string | null;
+  warnEn?: string | null;
   schemeHi: string;
+  schemeEn?: string;
   classesHi: string;
+  classesEn?: string;
   calendar: { registrationOpen: string; studentDeadline: string; disbursementFrom: string };
 };
 
 type Institute = {
   id: string;
   nameHi: string;
+  nameEn?: string;
+  districtCode?: string;
   districtHi: string;
+  districtEn?: string;
   kind: string;
   affiliatedTo: string | null;
   clerkNameHi: string;
+  clerkNameEn?: string;
   courses: {
     code: string;
     nameHi: string;
+    nameEn?: string;
     published: boolean;
     tuition: number;
     excluded: { key: string; amount: number }[];
@@ -107,12 +117,13 @@ export function RouteWizard() {
   }
 
   const allowedKinds = result ? KIND_FOR_TRACK[result.track] ?? [] : [];
-  const visible = institutes.filter((i) =>
-    result
-      ? allowedKinds.includes(i.kind) &&
-        (result.track === "outside_state" ? i.districtHi.includes("बाहर") : !i.districtHi.includes("बाहर"))
-      : true,
-  );
+  const visible = institutes.filter((i) => {
+    if (!result) return true;
+    if (i.id === "inst-other") return result.track !== "outside_state";
+    if (!allowedKinds.includes(i.kind)) return false;
+    const outside = i.districtCode === "OS";
+    return result.track === "outside_state" ? outside : !outside;
+  });
   const chosen = visible.find((i) => i.id === instituteId);
 
   return (
@@ -216,23 +227,23 @@ export function RouteWizard() {
         </button>
       </div>
 
-      {error ? <ErrorNote error={error} /> : null}
+            {error ? <ErrorNote error={error} lang="en" /> : null}
 
       {result ? (
         <>
           <div className="sheet stack">
             <p className="eyebrow">Resolved Application Track</p>
             <div className="row-between">
-              <h2 style={{ fontSize: "var(--step-3)" }}>{result.schemeHi}</h2>
+              <h2 style={{ fontSize: "var(--step-3)" }}>{result.schemeEn ?? result.schemeHi}</h2>
               <StatusChip tone={result.cycle === "renewal" ? "verified" : "waiting"}>
                 {result.cycle === "renewal" ? "Renewal / नवीनीकरण" : "Fresh / नया आवेदन"}
               </StatusChip>
             </div>
-            <p>{result.reasonHi}</p>
+            <p>{result.reasonEn ?? result.reasonHi}</p>
             <dl style={{ margin: 0 }}>
               <div className="datarow">
                 <dt>Class / Level</dt>
-                <dd>{result.classesHi}</dd>
+                <dd>{result.classesEn ?? result.classesHi}</dd>
               </div>
               <div className="datarow">
                 <dt>Portal Opens</dt>
@@ -248,9 +259,9 @@ export function RouteWizard() {
               </div>
             </dl>
             <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-              {result.recoveryHi}
+              {result.recoveryEn ?? result.recoveryHi}
             </p>
-            {result.warnHi ? <Callout tone="warn">{result.warnHi}</Callout> : null}
+            {result.warnEn || result.warnHi ? <Callout tone="warn">{result.warnEn ?? result.warnHi}</Callout> : null}
           </div>
 
           <div className="sheet stack">
@@ -279,10 +290,10 @@ export function RouteWizard() {
                       }}
                     />
                     <span>
-                      {i.nameHi}
+                      {i.nameEn ?? i.nameHi}
                       <span className="faint" style={{ fontSize: "var(--step-s)", display: "block" }}>
-                        {i.districtHi}
-                        {i.affiliatedTo ? ` · ${i.affiliatedTo}` : ""} · Clerk: {i.clerkNameHi}
+                        {i.districtEn ?? i.districtHi}
+                        {i.affiliatedTo ? ` · ${i.affiliatedTo}` : ""} · Clerk: {i.clerkNameEn ?? i.clerkNameHi}
                       </span>
                     </span>
                   </label>
@@ -306,7 +317,7 @@ export function RouteWizard() {
                         onChange={() => setCourseCode(c.code)}
                       />
                       <span>
-                        {c.nameHi}
+                        {c.nameEn ?? c.nameHi}
                         <span className="faint" style={{ fontSize: "var(--step-s)", display: "block" }}>
                           {c.published
                             ? `Non-refundable Tuition: ${fmtMoney(c.tuition)} (Auto-fetched from master data)`

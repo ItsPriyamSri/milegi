@@ -17,7 +17,7 @@ export async function loadOwnCase(id: string) {
 
 export async function loadPublicCase(code: string) {
   await hydrate();
-  const hit = resolveTracking(code);
+  const hit = resolveTracking(decodeURIComponent(code));
   if (hit.kind === "otr_no_case") {
     return { kind: "otr_no_case" as const, otr: hit.otr };
   }

@@ -74,6 +74,16 @@ export const POST = handler(async (req, { params }) => {
     }
 
     case "lock": {
+      const url = new URL(req.url);
+      if (url.searchParams.get("crash") === "1") {
+        throw new AppError("PORTAL_502", {
+          hi: "सर्वर बीच में गिर गया (असली पोर्टल ERROR 500 दिखाता है)। आपका ड्राफ़्ट इस फ़ोन पर है — फिर लॉक दबाएँ।",
+          en: "The server dropped mid-save. The real portal shows “ERROR 500: Internal Server Error”. Your draft is on this device — tap Lock again.",
+          retryable: true,
+          status: 502,
+          upstream: "ERROR 500: Internal Server Error",
+        });
+      }
       const refreshed = runPreflightOn(existing, profile);
       const locked = lockCase(refreshed);
       return ok({ case: caseView(locked) });

@@ -39,12 +39,28 @@ export default async function Aavedan({ params }: { params: Promise<{ caseId: st
         provenance={{}}
         correctionFields={(c.flags ?? []).flatMap((f) => CORRECTABLE_FIELDS[f.code] ?? [])}
         identityRows={[
-          { label: "नाम", value: c.studentNameHi, provenance: "आधार से" },
-          { label: "OTR", value: c.otr ?? "—", provenance: "जीवनभर" },
-          { label: "वर्ग", value: String(c.categoryHi ?? "—"), provenance: "प्रमाणपत्र" },
-          { label: "जिला", value: c.districtHi, provenance: "संस्थान से" },
-          { label: "संस्थान", value: c.instituteNameHi, provenance: "मास्टर डेटा" },
-          { label: "कोर्स", value: c.courseNameHi, provenance: "मास्टर डेटा" },
+          {
+            label: isEn ? "Name" : "नाम",
+            value: isEn ? (c.studentNameEn ?? c.studentNameHi) : c.studentNameHi,
+            provenance: isEn ? "From Aadhaar" : "आधार से",
+          },
+          { label: "OTR", value: c.otr ?? "—", provenance: isEn ? "Lifetime ID" : "जीवनभर" },
+          { label: isEn ? "Category" : "वर्ग", value: String(c.categoryHi ?? "—"), provenance: isEn ? "Certificate" : "प्रमाणपत्र" },
+          {
+            label: isEn ? "District" : "जिला",
+            value: isEn ? (c.districtEn ?? c.districtHi) : c.districtHi,
+            provenance: isEn ? "From institute" : "संस्थान से",
+          },
+          {
+            label: isEn ? "Institute" : "संस्थान",
+            value: isEn ? (c.instituteNameEn ?? c.instituteNameHi) : c.instituteNameHi,
+            provenance: isEn ? "Master data" : "मास्टर डेटा",
+          },
+          {
+            label: isEn ? "Course" : "कोर्स",
+            value: isEn ? (c.courseNameEn ?? c.courseNameHi) : c.courseNameHi,
+            provenance: isEn ? "Master data" : "मास्टर डेटा",
+          },
         ]}
         fee={{
           nonRefundable: c.fee.nonRefundable,
@@ -53,7 +69,11 @@ export default async function Aavedan({ params }: { params: Promise<{ caseId: st
           courseNameHi: c.courseNameHi,
           instituteNameHi: c.instituteNameHi,
         }}
-        estimate={{ total: c.estimate.total, basisHi: c.estimate.basisHi }}
+        estimate={{
+          total: c.estimate.total,
+          basisHi: isEn ? (c.estimate.basisEn ?? c.estimate.basisHi) : c.estimate.basisHi,
+        }}
+        lang={lang}
         deadline={c.dueAt}
       />
     </Shell>

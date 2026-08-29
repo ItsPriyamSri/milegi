@@ -38,6 +38,7 @@ export type FormShellProps = {
   deadline: string | null;
   stage: string;
   correctionFields: string[];
+  lang?: "en" | "hi";
 };
 
 const EXCLUDED_LABEL: Record<string, { en: string; hi: string }> = {
@@ -50,6 +51,7 @@ const EXCLUDED_LABEL: Record<string, { en: string; hi: string }> = {
 
 export function FormShell(props: FormShellProps) {
   const { caseId, track, cycle } = props;
+  const lang = props.lang ?? "en";
   const { values, update, saveState, lastError, fieldErrors, serverExtras } = useAutosave(
     caseId,
     props.initial,
@@ -176,8 +178,8 @@ export function FormShell(props: FormShellProps) {
                 const disabled = !fieldEnabled(spec);
                 const id = `field-${spec.name}`;
                 const value = values[spec.name];
-                const labelText = spec.labelEn || spec.labelHi;
-                const hintText = spec.hintEn || spec.hintHi;
+                const labelText = lang === "en" ? spec.labelEn || spec.labelHi : spec.labelHi;
+                const hintText = lang === "en" ? spec.hintEn || spec.hintHi : spec.hintHi;
                 if (spec.type === "checkbox") {
                   return (
                     <label className="check" key={spec.name} htmlFor={id}>
@@ -219,7 +221,7 @@ export function FormShell(props: FormShellProps) {
                         <option value="">— Select —</option>
                         {spec.options.map((o) => (
                           <option key={o.value} value={o.value}>
-                            {o.en || o.hi}
+                            {lang === "en" ? o.en || o.hi : o.hi}
                           </option>
                         ))}
                       </select>
@@ -291,7 +293,7 @@ export function FormShell(props: FormShellProps) {
           </p>
 
           <div className="money">
-            <span className="money-label">अनुमानित लाभ</span>
+            <span className="money-label">{lang === "en" ? "Estimated benefit" : "अनुमानित लाभ"}</span>
             <span className="money-amount">
               {fmtMoney(serverExtras?.estimate?.total ?? props.estimate.total)}
             </span>
@@ -301,41 +303,41 @@ export function FormShell(props: FormShellProps) {
           </div>
 
           {disputed ? (
-            <Callout tone="warn" title="शुल्क आपत्ति दर्ज है">
+            <Callout tone="warn" title={lang === "en" ? "Fee dispute on file" : "शुल्क आपत्ति दर्ज है"}>
               <p style={{ fontSize: "var(--step-s)" }}>
-                {disputed.note} — कॉलेज लिपिक को यह दिखेगी ({fmtDate(disputed.at)})।
+                {disputed.note} — {lang === "en" ? "the college clerk will see this" : "कॉलेज लिपिक को यह दिखेगी"} ({fmtDate(disputed.at)}).
               </p>
             </Callout>
           ) : disputeOpen ? (
             <div className="stack">
               <div className="field">
-                <label htmlFor="disputeNote">रसीद में क्या लिखा है?</label>
+                <label htmlFor="disputeNote">{lang === "en" ? "What does the receipt say?" : "रसीद में क्या लिखा है?"}</label>
                 <input
                   id="disputeNote"
                   value={disputeNote}
                   onChange={(e) => setDisputeNote(e.target.value)}
-                  placeholder="जैसे: रसीद में ₹21,300 लिखा है"
+                  placeholder={lang === "en" ? "e.g. receipt shows ₹21,300" : "जैसे: रसीद में ₹21,300 लिखा है"}
                 />
               </div>
-              {disputeError ? <ErrorNote error={disputeError} /> : null}
+              {disputeError ? <ErrorNote error={disputeError} lang={lang} /> : null}
               <div className="row">
                 <button className="btn" type="button" onClick={raiseDispute}>
-                  आपत्ति दर्ज करें
+                  {lang === "en" ? "File dispute" : "आपत्ति दर्ज करें"}
                 </button>
                 <button className="btn btn-quiet" type="button" onClick={() => setDisputeOpen(false)}>
-                  रहने दें
+                  {lang === "en" ? "Cancel" : "रहने दें"}
                 </button>
               </div>
             </div>
           ) : (
             <button className="btn btn-sm" type="button" onClick={() => setDisputeOpen(true)}>
-              रसीद मेल नहीं खाती
+              {lang === "en" ? "Receipt does not match" : "रसीद मेल नहीं खाती"}
             </button>
           )}
         </div>
       </section>
 
-      {lastError ? <ErrorNote error={lastError} /> : null}
+      {lastError ? <ErrorNote error={lastError} lang={lang} /> : null}
 
       <div
         className="row-between noprint"
@@ -353,10 +355,10 @@ export function FormShell(props: FormShellProps) {
       >
         <SaveChip state={lastError ? "error" : saveState} />
         <span className="faint tnum" style={{ fontSize: "var(--step-s)" }}>
-          अंतिम तारीख़ {fmtDate(props.deadline)}
+          {lang === "en" ? "Deadline" : "अंतिम तारीख़"} {fmtDate(props.deadline)}
         </span>
         <Link className="btn btn-primary" href={`/jaanch/${caseId}`}>
-          जाँच करें और लॉक करें
+          {lang === "en" ? "Review and lock" : "जाँच करें और लॉक करें"}
         </Link>
       </div>
     </div>

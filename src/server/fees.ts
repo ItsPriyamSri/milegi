@@ -1,7 +1,7 @@
 import type { ActorRef, Case, FeeHeads, Stage } from "./types";
 import { iso } from "./clock";
 import { getInstitute } from "./store";
-import { AMOUNT_DISCLAIMER_HI, maintenanceFor } from "./config/rates";
+import { AMOUNT_DISCLAIMER_EN, AMOUNT_DISCLAIMER_HI, maintenanceFor } from "./config/rates";
 import { SCHEMES } from "./config/schemes";
 import { AppError } from "./errors";
 import { appendEvent } from "./machine";
@@ -67,6 +67,11 @@ export function estimateFor(c: Case): Case["estimate"] {
           )} + `
         : "") +
       `रखरखाव भत्ता ₹${band.perMonth}/माह × ${band.months} माह। ${AMOUNT_DISCLAIMER_HI}`,
+    basisEn:
+      (feeReimbursement > 0
+        ? `Non-refundable tuition ₹${feeReimbursement.toLocaleString("en-IN")} from college master data + `
+        : "") +
+      `maintenance ₹${band.perMonth}/month × ${band.months} months. ${AMOUNT_DISCLAIMER_EN}`,
   };
 }
 

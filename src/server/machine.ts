@@ -3,7 +3,7 @@ import { addDays, earliest, iso } from "./clock";
 import { calendarFor } from "./config/calendar";
 import { REASONS } from "./config/reasons";
 import { STAGE_LABELS_EN, STAGE_LABELS_HI } from "./config/schemes";
-import { districtHi } from "./config/districts";
+import { districtEn, districtHi } from "./config/districts";
 import { getInstitute } from "./store";
 
 export const TRANSITIONS: Record<Stage, Stage[]> = {
@@ -30,22 +30,31 @@ export function isTerminal(stage: Stage): boolean {
 export const SYSTEM_ACTOR: ActorRef = {
   role: "treasury",
   nameHi: "कोषागार / भुगतान प्रणाली",
+  nameEn: "Treasury / payment system",
   designationHi: "स्वचालित चरण",
+  designationEn: "Automatic stage",
   orgHi: "PFMS (नकली)",
+  orgEn: "PFMS (mock)",
 };
 
 export const STUDENT_ACTOR: ActorRef = {
   role: "student",
   nameHi: "आप",
+  nameEn: "You",
   designationHi: "आवेदक",
+  designationEn: "Applicant",
   orgHi: "—",
+  orgEn: "—",
 };
 
 export const MONITOR_ACTOR: ActorRef = {
   role: "treasury",
   nameHi: "मिलेगी अनुश्रवण",
+  nameEn: "Milegi monitor",
   designationHi: "स्वचालित",
+  designationEn: "Automatic",
   orgHi: "प्रणाली",
+  orgEn: "System",
 };
 
 export function ownerFor(c: Case, stage: Stage): ActorRef | null {
@@ -61,23 +70,32 @@ export function ownerFor(c: Case, stage: Stage): ActorRef | null {
         inst?.clerk ?? {
           role: "institute",
           nameHi: "संस्थान लिपिक",
+          nameEn: "Institute clerk",
           designationHi: "छात्रवृत्ति लिपिक",
+          designationEn: "Scholarship clerk",
           orgHi: "—",
+          orgEn: "—",
         }
       );
     case "university_scrutiny":
       return {
         role: "university",
         nameHi: "सम्बद्धता अनुभाग",
+        nameEn: "Affiliation cell",
         designationHi: "शुल्क सत्यापन",
+        designationEn: "Fee scrutiny",
         orgHi: inst?.affiliatedTo ?? "सम्बद्ध विश्वविद्यालय",
+        orgEn: inst?.affiliatedTo ?? "Affiliating university",
       };
     case "dwo_review":
       return {
         role: "dwo",
         nameHi: "जिला समाज कल्याण कार्यालय",
+        nameEn: "District Social Welfare Office",
         designationHi: "जिला छात्रवृत्ति समिति",
+        designationEn: "District scholarship committee",
         orgHi: districtHi(String(c.form.districtCode ?? "")),
+        orgEn: districtEn(String(c.form.districtCode ?? "")),
         contactHint: "विकास भवन / कल्याण भवन",
       };
     case "sanctioned":

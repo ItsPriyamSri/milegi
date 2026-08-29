@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Case, Institute, Notification, Profile, SimConfig } from "./types";
 import { setClockOffset } from "./clock";
-import { SEED_INSTITUTES } from "./seeds";
+import { SEED_CASES, SEED_INSTITUTES, SEED_PROFILES } from "./seeds";
 
 type Snapshot = {
   profiles: Record<string, Profile>;
@@ -13,8 +13,14 @@ type Snapshot = {
   seq: number;
 };
 
-let snap: Snapshot | null = null;
-let dirty = false;
+// Next can load this module twice (RSC vs Route). Module locals then diverge: API
+// persist writes the file, the track page still has the old snap and 404s a live OTR.
+type Bag = { snap: Snapshot | null; dirty: boolean; fileMtime: number };
+function bag(): Bag {
+  const g = globalThis as typeof globalThis & { __milegiStore?: Bag };
+  if (!g.__milegiStore) g.__milegiStore = { snap: null, dirty: false, fileMtime: 0 };
+  return g.__milegiStore;
+}
 
 export const DEFAULT_SIM: SimConfig = {
   clockOffsetDays: 0,
@@ -47,21 +53,44 @@ function emptySnapshot(): Snapshot {
   };
 }
 
-function seedInstitutes(s: Snapshot): void {
-  for (const inst of SEED_INSTITUTES) s.institutes[inst.id] = structuredClone(inst);
+function seedCatalog(s: Snapshot): void {
+  for (const inst of SEED_INSTITUTES) {
+    const copy = structuredClone(inst);
+    if (JSON.stringify(s.institutes[inst.id]) !== JSON.stringify(copy)) {
+      s.institutes[inst.id] = copy;
+      bag().dirty = true;
+    }
+  }
+  // Demo people leak into unit tests (shared cert numbers, extra PFMS cases).
+  if (process.env.NODE_TEST_CONTEXT) return;
+  for (const p of SEED_PROFILES) {
+    if (!s.profiles[p.id]) {
+      s.profiles[p.id] = structuredClone(p);
+      bag().dirty = true;
+    }
+  }
+  for (const c of SEED_CASES) {
+    if (!s.cases[c.id]) {
+      s.cases[c.id] = structuredClone(c);
+      bag().dirty = true;
+    }
+  }
 }
 
 export function reseed(): void {
   const s = emptySnapshot();
-  seedInstitutes(s);
-  snap = s;
+  seedCatalog(s);
+  const b = bag();
+  b.snap = s;
+  b.dirty = true;
   setClockOffset(0);
-  dirty = true;
 }
 
 export function __resetForTests(): void {
-  snap = null;
-  dirty = false;
+  const b = bag();
+  b.snap = null;
+  b.dirty = false;
+  b.fileMtime = 0;
 }
 
 export function useNeon(): boolean {
@@ -97,11 +126,8 @@ async function hydrateFromNeon(): Promise<void> {
     else if (r.kind === "config" && r.id === "sim") s.sim = { ...DEFAULT_SIM, ...(r.payload as SimConfig) };
     else if (r.kind === "config" && r.id === "seq") s.seq = (r.payload as { seq: number }).seq;
   }
-  if (Object.keys(s.institutes).length === 0) {
-    seedInstitutes(s);
-    dirty = true;
-  }
-  snap = s;
+  seedCatalog(s);
+  bag().snap = s;
 }
 
 async function persistToNeon(): Promise<void> {
@@ -125,43 +151,75 @@ async function persistToNeon(): Promise<void> {
   }
 }
 
+function fileMtimeMs(): number {
+  try {
+    return fs.statSync(/* turbopackIgnore: true */ storePath()).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+function loadFromFile(): boolean {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ storePath(), "utf8")) as Snapshot;
+    const next = { ...emptySnapshot(), ...parsed, sim: { ...DEFAULT_SIM, ...parsed.sim } };
+    seedCatalog(next);
+    const b = bag();
+    b.snap = next;
+    b.fileMtime = fileMtimeMs();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function hydrate(): Promise<void> {
-  if (snap) {
-    setClockOffset(snap.sim.clockOffsetDays);
+  const b = bag();
+  if (useNeon()) {
+    if (b.snap) {
+      setClockOffset(b.snap.sim.clockOffsetDays);
+      return;
+    }
+    await hydrateFromNeon();
+    setClockOffset(b.snap!.sim.clockOffsetDays);
     return;
   }
-  if (useNeon()) {
-    await hydrateFromNeon();
-  } else {
-    try {
-      const parsed = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ storePath(), "utf8")) as Snapshot;
-      snap = { ...emptySnapshot(), ...parsed, sim: { ...DEFAULT_SIM, ...parsed.sim } };
-      if (Object.keys(snap.cases).length === 0) {
-        seedInstitutes(snap);
-        dirty = true;
-      }
-    } catch {
-      reseed();
-    }
+  const mtime = fileMtimeMs();
+  if (b.snap && b.dirty) {
+    seedCatalog(b.snap);
+    setClockOffset(b.snap.sim.clockOffsetDays);
+    return;
   }
-  setClockOffset(snap!.sim.clockOffsetDays);
+  if (b.snap && mtime === b.fileMtime) {
+    seedCatalog(b.snap);
+    setClockOffset(b.snap.sim.clockOffsetDays);
+    return;
+  }
+  if (!loadFromFile()) {
+    if (!b.snap) reseed();
+  }
+  seedCatalog(b.snap!);
+  setClockOffset(b.snap!.sim.clockOffsetDays);
 }
 
 // ponytail: whole-snapshot write, last-write-wins. Ceiling is a demo-sized store; the upgrade path is
 // a dirty-id set plus the version column that already exists on `records`.
 export async function persist(): Promise<void> {
-  if (!snap || !dirty) return;
+  const b = bag();
+  if (!b.snap || !b.dirty) return;
   if (useNeon()) {
     await persistToNeon();
   } else {
     const file = storePath();
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(/* turbopackIgnore: true */ file, JSON.stringify(snap), "utf8");
+    fs.writeFileSync(/* turbopackIgnore: true */ file, JSON.stringify(b.snap), "utf8");
+    b.fileMtime = fileMtimeMs();
   }
-  dirty = false;
+  b.dirty = false;
 }
 
 function db(): Snapshot {
+  const snap = bag().snap;
   if (!snap) throw new Error("store not hydrated — call await hydrate() first");
   return snap;
 }
@@ -171,7 +229,7 @@ export function getCase(id: string): Case | undefined {
 }
 export function putCase(c: Case): void {
   db().cases[c.id] = c;
-  dirty = true;
+  bag().dirty = true;
 }
 export function allCases(): Case[] {
   return Object.values(db().cases);
@@ -186,7 +244,7 @@ export function getProfile(id: string): Profile | undefined {
 }
 export function putProfile(p: Profile): void {
   db().profiles[p.id] = p;
-  dirty = true;
+  bag().dirty = true;
 }
 export function findProfileByMobile(mobile: string): Profile | undefined {
   return Object.values(db().profiles).find((p) => p.mobile === mobile);
@@ -211,11 +269,11 @@ export function allInstitutes(): Institute[] {
 }
 export function putInstitute(i: Institute): void {
   db().institutes[i.id] = i;
-  dirty = true;
+  bag().dirty = true;
 }
 export function putNotification(n: Notification): void {
   db().notifications[n.id] = n;
-  dirty = true;
+  bag().dirty = true;
 }
 export function notificationsFor(caseId: string): Notification[] {
   return Object.values(db().notifications)
@@ -227,14 +285,14 @@ export function getSim(): SimConfig {
 }
 export function putSim(s: SimConfig): void {
   db().sim = s;
-  dirty = true;
+  bag().dirty = true;
 }
 export function markDirty(): void {
-  dirty = true;
+  bag().dirty = true;
 }
 export function nextCaseId(): string {
   const s = db();
   s.seq += 1;
-  dirty = true;
+  bag().dirty = true;
   return `MLG-26-${String(s.seq).padStart(6, "0")}`;
 }

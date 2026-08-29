@@ -14,7 +14,7 @@ export function TrustBar(): JSX.Element {
       <div className="row-between" style={{ flexWrap: "wrap", gap: "var(--s3)" }}>
         <div className="row" style={{ gap: "var(--s2)" }}>
           <span className="chip" data-tone="verified" style={{ fontWeight: 700 }}>
-            GOVT TRUST & INTEGRATIONS
+            MOCKED INTEGRATIONS · NOT A GOVERNMENT SITE
           </span>
           <span className="faint" style={{ fontSize: "var(--step-s)" }}>
             Proactive e-Governance Stack · Direct Benefit Transfer (DBT)

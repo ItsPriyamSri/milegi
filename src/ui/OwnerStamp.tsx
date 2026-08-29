@@ -2,7 +2,15 @@ import type { JSX } from "react";
 import { fmtWeekday, fmtDays } from "@/lib/format";
 
 export function OwnerStamp(props: {
-  owner: { nameHi: string; designationHi: string; orgHi: string; contactHint?: string } | null;
+  owner: {
+    nameHi: string;
+    nameEn?: string;
+    designationHi: string;
+    designationEn?: string;
+    orgHi: string;
+    orgEn?: string;
+    contactHint?: string;
+  } | null;
   dueAt: string | null;
   breachDays: number;
   waitingDays: number;
@@ -32,10 +40,10 @@ export function OwnerStamp(props: {
         ) : null}
       </div>
       <div className="stamp-name" style={{ fontSize: "var(--step-2)", fontWeight: 800, color: "var(--ink)" }}>
-        {props.owner.nameHi}
+        {props.owner.nameEn ?? props.owner.nameHi}
       </div>
       <div className="stamp-meta muted" style={{ fontSize: "var(--step-s)" }}>
-        {props.owner.designationHi} · {props.owner.orgHi}
+        {props.owner.designationEn ?? props.owner.designationHi} · {props.owner.orgEn ?? props.owner.orgHi}
       </div>
       {props.owner.contactHint ? (
         <div className="stamp-meta faint" style={{ fontSize: "var(--step-s)" }}>{props.owner.contactHint}</div>

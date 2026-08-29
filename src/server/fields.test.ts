@@ -101,5 +101,5 @@ test("a locked case at the institute accepts nothing at all", () => {
 test("validateAll returns every missing required field before lock", () => {
   const problems = validateAll(makeDraftCase({ form: { districtCode: "70" } }));
   assert.ok(problems.length >= 3);
-  assert.ok(problems.every((p) => p.messageHi.length > 0));
+  assert.ok(problems.every((p) => p.messageHi.length > 0 && p.messageEn.length > 0));
 });

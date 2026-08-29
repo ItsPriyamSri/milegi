@@ -12,7 +12,7 @@ export function OperatorLogin({
 }: {
   role: "institute" | "dwo";
   next: string;
-  options: { code: string; labelHi: string; pin: string }[];
+  options: { code: string; labelHi: string; labelEn?: string; pin: string }[];
 }) {
   const router = useRouter();
   const [code, setCode] = useState(options[0]?.code ?? "");
@@ -44,7 +44,7 @@ export function OperatorLogin({
         <select id="code" value={code} onChange={(e) => setCode(e.target.value)}>
           {options.map((o) => (
             <option key={o.code} value={o.code}>
-              {o.labelHi}
+              {o.labelEn ?? o.labelHi}
             </option>
           ))}
         </select>
@@ -64,7 +64,7 @@ export function OperatorLogin({
           Demo PIN printed for evaluation: <code className="mono" style={{ color: "var(--action)", fontWeight: 700 }}>1234</code>.
         </span>
       </div>
-      {error ? <ErrorNote error={error} /> : null}
+      {error ? <ErrorNote error={error} lang="en" /> : null}
       <button className="btn btn-primary" type="submit" disabled={busy || pin.length === 0}>
         {busy ? "Authenticating…" : "Login to Console →"}
       </button>

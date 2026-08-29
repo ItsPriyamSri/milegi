@@ -11,8 +11,11 @@ export type Role = "student" | "institute" | "university" | "dwo" | "treasury" |
 export type ActorRef = {
   role: Role;
   nameHi: string;
+  nameEn?: string;
   designationHi: string;
+  designationEn?: string;
   orgHi: string;
+  orgEn?: string;
   contactHint?: string;
 };
 
@@ -125,6 +128,7 @@ export type Case = {
     months: number;
     total: number;
     basisHi: string;
+    basisEn?: string;
   };
   hardCopy: { dueAt: string | null; receivedAt: string | null };
   attendancePercent: number | null;

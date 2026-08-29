@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
+import { clearLocal, readLocal, writeLocal } from "@/lib/queue";
 import { Callout, ErrorNote } from "@/ui/bits";
 import { CATEGORIES } from "@/server/config/schemes";
 import { DISTRICTS } from "@/server/config/districts";
@@ -11,22 +12,29 @@ type OtrResponse = {
   profile: { id: string; otr: string; nameHi: string; duplicateOtrs: string[] };
   duplicate: boolean;
   duplicateNoteHi: string | null;
+  duplicateNoteEn: string | null;
 };
 
+const OTR_DRAFT_KEY = "otr";
 const DEMO_AADHAAR = "000012340002";
 
+const EMPTY_FORM = {
+  aadhaarDemo: "",
+  mobile: "",
+  dob: "",
+  category: "obc",
+  nameHi: "",
+  fatherNameHi: "",
+  motherNameHi: "",
+  districtCode: "72",
+  addressHi: "",
+  gender: "m",
+};
+
 export function OtrForm() {
-  const [form, setForm] = useState({
-    aadhaarDemo: "",
-    mobile: "",
-    dob: "",
-    category: "obc",
-    nameHi: "",
-    fatherNameHi: "",
-    motherNameHi: "",
-    districtCode: "70",
-    addressHi: "",
-    gender: "m",
+  const [form, setForm] = useState(() => {
+    const local = readLocal(OTR_DRAFT_KEY);
+    return local ? { ...EMPTY_FORM, ...local } : EMPTY_FORM;
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
@@ -34,7 +42,11 @@ export function OtrForm() {
   const [copied, setCopied] = useState(false);
 
   function set(name: keyof typeof form, value: string) {
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      writeLocal(OTR_DRAFT_KEY, next);
+      return next;
+    });
   }
 
   async function submit(e: FormEvent) {
@@ -42,7 +54,10 @@ export function OtrForm() {
     setBusy(true);
     setError(null);
     try {
-      setResult(await api.post<OtrResponse>("/api/otr", form));
+      setResult(
+        await api.post<OtrResponse>("/api/otr", { ...form, nameEn: form.nameHi }),
+      );
+      clearLocal(OTR_DRAFT_KEY);
     } catch (err) {
       setError(errorOf(err));
     } finally {
@@ -54,14 +69,14 @@ export function OtrForm() {
     setBusy(true);
     setError(null);
     try {
-      const res = await api.post<{ found: boolean; otr: string | null; hintHi: string }>(
+      const res = await api.post<{ found: boolean; otr: string | null; hintHi: string; hintEn: string }>(
         "/api/otr/recover",
         { mobile: form.mobile },
       );
       setError({
         code: "RECOVERY",
         hi: res.hintHi,
-        en: res.hintHi,
+        en: res.hintEn ?? res.hintHi,
         retryable: false,
         ref: "RECOVERY",
       });
@@ -96,7 +111,9 @@ export function OtrForm() {
             <div className="mono" style={{ fontSize: "clamp(2rem, 5vw, 3.25rem)", fontWeight: 800, color: "var(--ink)", margin: "var(--s1) 0" }}>
               {result.profile.otr}
             </div>
-            <p style={{ marginTop: "var(--s2)", fontWeight: 600 }}>{result.duplicateNoteHi}</p>
+            <p style={{ marginTop: "var(--s2)", fontWeight: 600 }}>
+              {result.duplicateNoteEn ?? result.duplicateNoteHi}
+            </p>
             {result.profile.duplicateOtrs.length > 0 ? (
               <p className="mono faint" style={{ fontSize: "var(--step-s)", marginTop: "var(--s2)" }}>
                 Intercepted duplicate attempt: {result.profile.duplicateOtrs.join(", ")}
@@ -236,7 +253,7 @@ export function OtrForm() {
           >
             {DISTRICTS.map((d) => (
               <option key={d.code} value={d.code}>
-                {d.hi}
+                {d.en} / {d.hi}
               </option>
             ))}
           </select>

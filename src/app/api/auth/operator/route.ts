@@ -5,9 +5,9 @@ import { OPERATOR_LOGINS } from "@/server/seeds";
 
 export const POST = handler(async (req) => {
   const body = await readJson(req);
-  const role = str(body.role, "भूमिका", 12);
-  const code = str(body.code, "कोड", 40);
-  const pin = str(body.pin, "पिन", 8);
+  const role = str(body.role, { en: "Role", hi: "भूमिका" }, 12);
+  const code = str(body.code, { en: "Login code", hi: "कोड" }, 40);
+  const pin = str(body.pin, { en: "PIN", hi: "पिन" }, 8);
   if (role !== "institute" && role !== "dwo") {
     throw new AppError("BAD_ROLE", { hi: "भूमिका गलत है।", en: "Unknown role.", status: 422 });
   }

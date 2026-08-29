@@ -30,7 +30,7 @@ export const POST = handler(async (req, { params }) => {
     }
     case "attendance": {
       const body = await readJson(req);
-      const updated = setAttendance(existing, num(body.percent, "उपस्थिति"), clerk);
+      const updated = setAttendance(existing, num(body.percent, { en: "Attendance", hi: "उपस्थिति" }), clerk);
       putCase(updated);
       return ok({ case: caseView(updated) });
     }

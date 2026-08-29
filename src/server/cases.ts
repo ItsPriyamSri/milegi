@@ -151,7 +151,7 @@ export function lockCase(input: Case, actor: ActorRef = STUDENT_ACTOR): Case {
   if (problems.length > 0) {
     throw new AppError("FORM_INCOMPLETE", {
       hi: `कुछ ज़रूरी जानकारी बाकी है: ${problems.map((p) => p.messageHi).join("; ")}`,
-      en: `Incomplete: ${problems.map((p) => p.field).join(", ")}`,
+      en: `Incomplete: ${problems.map((p) => p.messageEn).join("; ")}`,
       status: 422,
     });
   }
@@ -249,6 +249,7 @@ export function caseView(c: Case, nowIso: string = iso()) {
     registrationNo: c.registrationNo,
     otr: profile?.otr ?? null,
     studentNameHi: profile?.nameHi ?? "—",
+    studentNameEn: profile?.nameEn ?? "—",
     categoryHi: profile?.category ?? null,
     districtHi: districtHi(String(c.form.districtCode ?? "")),
     districtEn: districtEn(String(c.form.districtCode ?? "")),

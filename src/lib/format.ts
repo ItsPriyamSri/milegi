@@ -9,7 +9,7 @@ export function fmtMoney(n: number): string {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;
 }
 
-export function fmtDate(iso: string | null | undefined, lang: Lang = "hi"): string {
+export function fmtDate(iso: string | null | undefined, lang: Lang = "en"): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
@@ -17,7 +17,7 @@ export function fmtDate(iso: string | null | undefined, lang: Lang = "hi"): stri
   return `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
-export function fmtWeekday(iso: string | null | undefined, lang: Lang = "hi"): string {
+export function fmtWeekday(iso: string | null | undefined, lang: Lang = "en"): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
