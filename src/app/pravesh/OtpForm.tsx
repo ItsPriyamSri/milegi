@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { api, errorOf, type ApiError } from "@/lib/api";
@@ -19,11 +20,13 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [code, setCode] = useState("");
+  const [noProfileError, setNoProfileError] = useState(false);
 
   async function sendOtp(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setNoProfileError(false);
     try {
       const res = await api.post<{ otpDemo: string }>("/api/auth/otp", { mobile });
       setOtpDemo(res.otpDemo);
@@ -38,13 +41,18 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setNoProfileError(false);
     try {
       const res = await api.post<VerifyResponse>("/api/auth/verify", { mobile, otp });
-      if (res.profile && res.cases.length > 0) {
+      if (!res.profile) {
+        setNoProfileError(true);
+        return;
+      }
+      if (res.cases.length > 0) {
         router.push(`/f/${res.cases[0].id}`);
         return;
       }
-      router.push(res.profile ? "/raasta" : "/otr");
+      router.push("/raasta");
     } catch (err) {
       setError(errorOf(err));
     } finally {
@@ -59,65 +67,103 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
           className="sheet stack"
           onSubmit={(e) => {
             e.preventDefault();
-            router.push(`/t/${code.trim().toUpperCase()}`);
+            if (code.trim()) {
+              router.push(`/t/${code.trim().toUpperCase()}`);
+            }
           }}
         >
-          <h2>आवेदन संख्या से देखें</h2>
+          <h2>Track Application / फ़ाइल देखें</h2>
           <p className="muted" style={{ fontSize: "var(--step-s)" }}>
-            बिना लॉगिन। असली पोर्टल पर स्थिति देखने के लिए भी पंजीकरण नंबर, पासवर्ड और कैप्चा चाहिए —
-            और वह बटन तभी दिखता है जब कॉलेज फ़ाइल अग्रसारित कर दे।
+            Enter any of your three identifiers below to view live stage, assigned officer, and deadline. No password or captcha required.
           </p>
           <div className="field">
-            <label htmlFor="code">आवेदन संख्या</label>
+            <label htmlFor="code">Case ID, 15-digit Registration No, or OTR / पहचान संख्या</label>
             <input
               id="code"
               name="code"
               value={code}
-              placeholder="MLG-26-000137"
+              placeholder="e.g. MLG-26-000137, 15-digit Reg No, or UP26-000137"
               onChange={(e) => setCode(e.target.value)}
               autoCapitalize="characters"
             />
+            <span className="field-hint">
+              Accepts Case ID (MLG-26-...), 15-digit Registration Number, or OTR (UP26-...).
+            </span>
           </div>
-          <button className="btn btn-primary" type="submit" disabled={code.trim().length < 6}>
-            फ़ाइल खोलें
+          <button className="btn btn-primary" type="submit" disabled={code.trim().length < 4}>
+            Track File / फ़ाइल खोलें →
           </button>
         </form>
       ) : null}
 
+      {noProfileError ? (
+        <Callout tone="warn" title="No OTR Profile Found / OTR नहीं मिला">
+          <p style={{ fontSize: "var(--step-0)", fontWeight: 600, color: "var(--ink)" }}>
+            Create an OTR first before applying for a scholarship.
+          </p>
+          <p style={{ fontSize: "var(--step-s)", marginTop: "var(--s2)" }}>
+            The registered mobile <code className="mono">{mobile}</code> has no existing OTR profile. Please complete One-Time Registration first.
+          </p>
+          <div style={{ marginTop: "var(--s3)" }}>
+            <Link className="btn btn-primary" href="/otr">
+              Create an OTR First →
+            </Link>
+          </div>
+        </Callout>
+      ) : null}
+
       {otpDemo === null ? (
         <form className="sheet stack" onSubmit={sendOtp}>
-          <h2>{mode === "track" ? "या मोबाइल से लॉगिन करें" : "मोबाइल नंबर"}</h2>
+          <div className="row-between">
+            <h2>{mode === "track" ? "Or Track via Mobile OTP" : "Mobile OTP Login / मोबाइल लॉगिन"}</h2>
+            <button
+              className="btn btn-sm"
+              type="button"
+              onClick={() => setMobile("9876543210")}
+            >
+              Fill Demo Mobile (9876543210)
+            </button>
+          </div>
           <div className="field">
-            <label htmlFor="mobile">10 अंकों का मोबाइल नंबर</label>
+            <label htmlFor="mobile">10-Digit Mobile Number (starts 6, 7, 8, or 9)</label>
             <input
               id="mobile"
               name="mobile"
               inputMode="numeric"
               autoComplete="tel"
               maxLength={10}
+              placeholder="e.g. 9876543210 or 7890123456"
               value={mobile}
               onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
             />
             <span className="field-hint">
-              यह नकली प्रणाली है — कोई SMS नहीं जाता, OTP स्क्रीन पर ही दिखेगा।
+              This is a synthetic prototype — no SMS is sent. The OTP will print directly on screen.
             </span>
           </div>
           <button className="btn btn-primary" type="submit" disabled={busy || mobile.length !== 10}>
-            {busy ? "भेज रहे हैं…" : "OTP भेजें"}
+            {busy ? "Sending OTP…" : "Send OTP / OTP भेजें"}
           </button>
           {error ? <ErrorNote error={error} /> : null}
         </form>
       ) : (
         <form className="sheet stack" onSubmit={verify}>
-          <h2>OTP डालें</h2>
-          <Callout tone="info" title={`नकली OTP: ${otpDemo}`}>
+          <div className="row-between">
+            <h2>Enter Security OTP / OTP दर्ज करें</h2>
+            <button
+              className="btn btn-sm"
+              type="button"
+              onClick={() => setOtp(otpDemo)}
+            >
+              Auto-Fill Demo OTP ({otpDemo})
+            </button>
+          </div>
+          <Callout tone="info" title={`DEMO OTP: ${otpDemo}`}>
             <p style={{ fontSize: "var(--step-s)" }}>
-              यह नकली OTP है — कोई SMS नहीं भेजा गया। असली पोर्टल पर यहीं 120 सेकंड का टाइमर और
-              कैप्चा भी होता है।
+              Synthetic OTP generated automatically — paste or click auto-fill above.
             </p>
           </Callout>
           <div className="field">
-            <label htmlFor="otp-boxes">6 अंकों का OTP</label>
+            <label htmlFor="otp-boxes">6-Digit Security OTP Code</label>
             <OtpBoxes
               id="otp-boxes"
               value={otp}
@@ -127,7 +173,7 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
           </div>
           <div className="row">
             <button className="btn btn-primary" type="submit" disabled={busy || otp.length !== 6}>
-              {busy ? "जाँच रहे हैं…" : "आगे बढ़ें"}
+              {busy ? "Verifying OTP…" : "Verify & Continue / आगे बढ़ें"}
             </button>
             <button
               className="btn btn-quiet"
@@ -137,7 +183,7 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
                 setOtp("");
               }}
             >
-              नंबर बदलें
+              Change Mobile Number
             </button>
           </div>
           {error ? <ErrorNote error={error} /> : null}
@@ -146,3 +192,4 @@ export function OtpForm({ mode }: { mode: "apply" | "track" }) {
     </div>
   );
 }
+

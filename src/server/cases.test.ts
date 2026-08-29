@@ -159,6 +159,10 @@ test("caseView exposes the timeline and alerts but never the identity number", (
   assert.ok(Array.isArray(v.events));
   assert.ok(v.estimate.basisHi.length > 0);
   assert.equal(v.otr, p.otr);
+  assert.equal(v.ids.otr, p.otr);
+  assert.equal(v.ids.caseId, v.id);
+  assert.ok(v.trackEn.length > 0);
+  assert.ok(v.cycleEn.length > 0);
   assert.equal(
     JSON.stringify(v).includes(p.aadhaarDemo),
     false,
@@ -175,4 +179,6 @@ test("trackView is safe to share: no form, no certificates", () => {
   assert.equal(json.includes("000012340001"), false);
   assert.equal((v as Record<string, unknown>).form, undefined);
   assert.ok(v.stageHi.length > 0);
+  assert.ok(v.ids.otr);
+  assert.ok(v.stageEn.length > 0);
 });

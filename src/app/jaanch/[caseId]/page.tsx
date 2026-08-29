@@ -29,15 +29,18 @@ export default async function Jaanch({ params }: { params: Promise<{ caseId: str
   const sections = SCHEMES[c.track].sections.filter((s) => s !== "identity" && s !== "fee");
   const threeDaysOut = new Date(Date.now() + 3 * 86400000).toISOString();
 
+  const isEn = lang === "en";
+
   return (
-    <Shell lang={lang} narrow>
+    <Shell lang={lang} narrow hideFooter>
       <PageHead
-        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
-        title="जाँच और लॉक"
+        eyebrow={`PRE-LOCK REVIEW · ${c.trackHi} · ${c.id}`}
+        title={isEn ? "Final Review & Lock / जाँच और लॉक" : "जाँच और लॉक / Final Review & Lock"}
         meta={
           <p className="measure muted">
-            फ़ॉर्म लॉक करने से पहले सभी जानकारी जाँच लें। लॉक के बाद संस्थान में हार्ड-कॉपी जमा करने की
-            घड़ी शुरू हो जाती है।
+            {isEn
+              ? "Verify all details before locking your file. Locking triggers the 3-day countdown to submit physical hard copies to your institute."
+              : "फ़ॉर्म लॉक करने से पहले सभी जानकारी जाँच लें। लॉक के बाद संस्थान में हार्ड-कॉपी जमा करने की घड़ी शुरू हो जाती है।"}
           </p>
         }
       />

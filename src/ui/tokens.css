@@ -1,27 +1,65 @@
-/* Gazette Register — cool mineral paper, cut-record 3px sheets, stamp-pad indigo,
-   clerk-stamp owner block, dak-register ledger spine, UPI-receipt paid state. */
+/* Clean Premium Light Mode System — Royal Navy, Slate Ink & Warm Saffron Accent System */
 :root {
-  --paper: #eef0eb;
-  --surface: #fbfcf9;
-  --surface-sunk: #e4e7e1;
-  --ink: #12151a;
-  --ink-muted: #4e565e;
-  --ink-faint: #73808a;
-  --rule: #d5dbd3;
-  --rule-strong: #b7c0b6;
-  --action: #1e3a8a;
-  --action-ink: #f7f8f4;
-  --action-hover: #172e70;
-  --focus: #2f5de0;
-  --waiting: #8a4b00;
-  --waiting-bg: #f8eedc;
-  --breach: #9b1c16;
-  --breach-bg: #fbeceb;
-  --verified: #145c38;
-  --verified-bg: #e6f3eb;
-  --paid: #0b4a36;
-  --paid-bg: #def0e8;
+  /* Canvas & Surface Tokens */
+  --paper: #faf9f6;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunk: #f8fafc;
+  --surface-overlay: #ffffff;
 
+  /* Brand Palette (Inspired by Award-Winning Gov Portals) */
+  --brand-navy: #0f172a;
+  --brand-navy-light: #1e293b;
+  --brand-blue: #1d4ed8;
+  --brand-blue-hover: #1e40af;
+  --brand-gold: #d97706;
+  --brand-gold-bright: #f59e0b;
+  --brand-gold-subtle: rgba(245, 158, 11, 0.1);
+  --brand-gold-border: rgba(245, 158, 11, 0.35);
+
+  /* Ink & Typography */
+  --ink: #0f172a;
+  --ink-secondary: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+
+  /* Hairlines & Rules */
+  --rule: #e2e8f0;
+  --rule-subtle: #f1f5f9;
+  --rule-strong: #cbd5e1;
+
+  /* Action Accents */
+  --action: #1d4ed8;
+  --action-hover: #1e40af;
+  --action-subtle: rgba(29, 78, 216, 0.06);
+  --action-border: rgba(29, 78, 216, 0.25);
+  --action-cyan: #0284c7;
+
+  /* Status Tokens */
+  --verified: #059669;
+  --verified-subtle: rgba(16, 185, 129, 0.08);
+  --verified-border: rgba(16, 185, 129, 0.3);
+
+  --waiting: #d97706;
+  --waiting-subtle: rgba(245, 158, 11, 0.08);
+  --waiting-border: rgba(245, 158, 11, 0.3);
+
+  --breach: #dc2626;
+  --breach-subtle: rgba(239, 68, 68, 0.08);
+  --breach-border: rgba(239, 68, 68, 0.3);
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lift: 0 12px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+
+  /* Motion Timing */
+  --ease-fast: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Modular Spacing System */
+  --s0: 2px;
   --s1: 4px;
   --s2: 8px;
   --s3: 12px;
@@ -29,79 +67,11 @@
   --s5: 24px;
   --s6: 32px;
   --s7: 48px;
-  --s8: 64px;
 
-  --radius: 3px;
-  --measure: 62ch;
-  --font: var(--font-deva), var(--font-latin), ui-sans-serif, "Nirmala UI", system-ui, sans-serif;
-  --mono: ui-monospace, "Cascadia Mono", "Roboto Mono", "Courier New", monospace;
-
+  /* Typography Scale */
   --step-s: 0.8125rem;
-  --step-0: 1rem;
-  --step-1: 1.125rem;
-  --step-2: 1.375rem;
-  --step-3: 1.75rem;
-  --step-4: 2.25rem;
-
-  --motion: 180ms cubic-bezier(0.2, 0, 0.2, 1);
-  --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent);
-  --grain: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    color-mix(in srgb, var(--ink) 3.5%, transparent) 3px
-  );
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #101317;
-    --surface: #171b21;
-    --surface-sunk: #0d1014;
-    --ink: #eceff1;
-    --ink-muted: #a4adb6;
-    --ink-faint: #78828b;
-    --rule: #2a313a;
-    --rule-strong: #3b4450;
-    --action: #9db4ff;
-    --action-ink: #0d1014;
-    --action-hover: #b8c8ff;
-    --focus: #9db4ff;
-    --waiting: #f3b953;
-    --waiting-bg: #2a2010;
-    --breach: #f78b82;
-    --breach-bg: #2c1412;
-    --verified: #7bce9c;
-    --verified-bg: #11261b;
-    --paid: #8fd6b0;
-    --paid-bg: #0f281d;
-    --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
-  }
-}
-
-/* The toggle has to win in both directions, so the dark values are repeated verbatim. */
-:root[data-theme="dark"] {
-  --paper: #101317;
-  --surface: #171b21;
-  --surface-sunk: #0d1014;
-  --ink: #eceff1;
-  --ink-muted: #a4adb6;
-  --ink-faint: #78828b;
-  --rule: #2a313a;
-  --rule-strong: #3b4450;
-  --action: #9db4ff;
-  --action-ink: #0d1014;
-  --action-hover: #b8c8ff;
-  --focus: #9db4ff;
-  --waiting: #f3b953;
-  --waiting-bg: #2a2010;
-  --breach: #f78b82;
-  --breach-bg: #2c1412;
-  --verified: #7bce9c;
-  --verified-bg: #11261b;
-  --paid: #8fd6b0;
-  --paid-bg: #0f281d;
-  --shadow-stamp: 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+  --step-4: 2.5rem;
+  --grain: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -112,4 +82,3 @@
     transition-duration: 0.001ms !important;
   }
 }
-

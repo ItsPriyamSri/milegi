@@ -2,6 +2,7 @@ import { handler, ok, readJson, str } from "@/server/http";
 import { mintOtr } from "@/server/otr";
 import { readSession, setSession } from "@/server/session-cookie";
 import type { Category } from "@/server/types";
+import { requireMobile } from "@/server/mobile";
 
 const CATEGORIES = ["sc", "st", "obc", "general", "minority"];
 
@@ -11,7 +12,7 @@ export const POST = handler(async (req) => {
   const category = str(body.category, "वर्ग", 10);
   const result = mintOtr({
     aadhaarDemo: str(body.aadhaarDemo, "डेमो आधार संख्या", 14),
-    mobile: str(body.mobile, "मोबाइल नंबर", 10),
+    mobile: requireMobile(body.mobile),
     dob: str(body.dob, "जन्मतिथि", 10),
     category: (CATEGORIES.includes(category) ? category : "general") as Category,
     nameHi: str(body.nameHi, "नाम", 80),
@@ -42,6 +43,9 @@ export const POST = handler(async (req) => {
     duplicate: Boolean(result.duplicateOf),
     duplicateNoteHi: result.duplicateOf
       ? "आपका OTR पहले से मौजूद है — नया बनाने की ज़रूरत नहीं। असली पोर्टल पर दूसरा OTR दोनों आवेदन ब्लॉक करा सकता है।"
+      : null,
+    duplicateNoteEn: result.duplicateOf
+      ? "Your OTR already exists — you do not need a new one. On the real portal a second OTR can block both applications."
       : null,
   });
 });

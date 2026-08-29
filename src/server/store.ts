@@ -134,9 +134,12 @@ export async function hydrate(): Promise<void> {
     await hydrateFromNeon();
   } else {
     try {
-      // turbopackIgnore: path may be env-overridden; store is demo-sized JSON only.
       const parsed = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ storePath(), "utf8")) as Snapshot;
       snap = { ...emptySnapshot(), ...parsed, sim: { ...DEFAULT_SIM, ...parsed.sim } };
+      if (Object.keys(snap.cases).length === 0) {
+        seedInstitutes(snap);
+        dirty = true;
+      }
     } catch {
       reseed();
     }
@@ -190,6 +193,15 @@ export function findProfileByMobile(mobile: string): Profile | undefined {
 }
 export function findProfileByAadhaar(aadhaarDemo: string): Profile | undefined {
   return Object.values(db().profiles).find((p) => p.aadhaarDemo === aadhaarDemo);
+}
+export function findProfileByOtr(otr: string): Profile | undefined {
+  const n = otr.trim().replace(/\s+/g, "").toUpperCase();
+  return Object.values(db().profiles).find((p) => p.otr.toUpperCase() === n);
+}
+export function findCaseByRegistrationNo(registrationNo: string): Case | undefined {
+  const n = registrationNo.trim();
+  if (!n) return undefined;
+  return Object.values(db().cases).find((c) => c.registrationNo === n);
 }
 export function getInstitute(id: string): Institute | undefined {
   return db().institutes[id];

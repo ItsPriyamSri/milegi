@@ -3,10 +3,11 @@ import { AppError } from "@/server/errors";
 import { setSession } from "@/server/session-cookie";
 import { caseSummary } from "@/server/cases";
 import { casesForProfile, findProfileByMobile, getSim } from "@/server/store";
+import { requireMobile } from "@/server/mobile";
 
 export const POST = handler(async (req) => {
   const body = await readJson(req);
-  const mobile = str(body.mobile, "मोबाइल नंबर", 10);
+  const mobile = requireMobile(body.mobile);
   const otp = str(body.otp, "OTP", 6);
   const expected = getSim().otpFor[mobile];
   if (!expected || expected !== otp) {

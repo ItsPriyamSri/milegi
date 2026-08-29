@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { caseView, trackView } from "@/server/cases";
 import { readSession } from "@/server/session-cookie";
 import { getCase, hydrate } from "@/server/store";
+import { resolveTracking } from "@/server/track";
 
 /** Read screens talk to the domain directly; only mutations go through the HTTP API. */
 export async function loadOwnCase(id: string) {
@@ -16,6 +17,13 @@ export async function loadOwnCase(id: string) {
 
 export async function loadPublicCase(code: string) {
   await hydrate();
-  const existing = getCase(decodeURIComponent(code).trim().toUpperCase());
-  return existing ? trackView(existing) : null;
+  const hit = resolveTracking(code);
+  if (hit.kind === "otr_no_case") {
+    return { kind: "otr_no_case" as const, otr: hit.otr };
+  }
+  if (hit.kind === "case") {
+    return { kind: "case" as const, ...trackView(hit.case) };
+  }
+  return null;
 }
+

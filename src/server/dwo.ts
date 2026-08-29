@@ -275,21 +275,98 @@ export type DwoRow = {
   waitingDays: number;
   breachDays: number;
   estimateTotal: number;
-  checks: { id: string; matched: boolean; unknown: boolean }[];
+  checks: { id: "board" | "enrolment" | "income" | "duplicate_income" | "attendance" | string; matched: boolean; unknown: boolean }[];
   flags: string[];
 };
+
+const DEMO_DWO_ROWS: DwoRow[] = [
+  {
+    caseId: "MLG-26-40192",
+    studentNameHi: "अमित वर्मा",
+    instituteNameHi: "राजकीय महाविद्यालय, कल्याणपुर",
+    courseNameHi: "बी.ए. (द्वितीय वर्ष)",
+    categoryHi: "अनुसूचित जाति (SC)",
+    stage: "dwo_review",
+    stageHi: "जिला अधिकारी जाँच (DWO Review)",
+    waitingDays: 8,
+    breachDays: 0,
+    estimateTotal: 15500,
+    checks: [
+      { id: "board" as const, matched: true, unknown: false },
+      { id: "enrolment" as const, matched: true, unknown: false },
+      { id: "income" as const, matched: true, unknown: false },
+      { id: "attendance" as const, matched: true, unknown: false },
+    ],
+    flags: [],
+  },
+  {
+    caseId: "MLG-26-55821",
+    studentNameHi: "नेहा गुप्ता",
+    instituteNameHi: "श्री गंगा प्रसाद अभियंत्रण संस्थान, उन्नाव",
+    courseNameHi: "बी.टेक (कंप्यूटर साइंस)",
+    categoryHi: "सामान्य वर्ग (General)",
+    stage: "dwo_review",
+    stageHi: "जिला अधिकारी जाँच (DWO Review)",
+    waitingDays: 19,
+    breachDays: 4,
+    estimateTotal: 86500,
+    checks: [
+      { id: "board" as const, matched: true, unknown: false },
+      { id: "enrolment" as const, matched: true, unknown: false },
+      { id: "income" as const, matched: false, unknown: false },
+      { id: "attendance" as const, matched: true, unknown: false },
+    ],
+    flags: ["INCOME_CERT_EXPIRED"],
+  },
+  {
+    caseId: "MLG-26-66109",
+    studentNameHi: "विक्रम सिंह",
+    instituteNameHi: "नगर पालिका इंटर कॉलेज, लखनऊ",
+    courseNameHi: "कक्षा 12 (विज्ञान)",
+    categoryHi: "अनुसूचित जनजाति (ST)",
+    stage: "sanctioned",
+    stageHi: "स्वीकृत (सत्यापित)",
+    waitingDays: 2,
+    breachDays: 0,
+    estimateTotal: 8400,
+    checks: [
+      { id: "board" as const, matched: true, unknown: false },
+      { id: "income" as const, matched: true, unknown: false },
+      { id: "attendance" as const, matched: true, unknown: false },
+    ],
+    flags: [],
+  },
+  {
+    caseId: "MLG-26-33901",
+    studentNameHi: "पूजा यादव",
+    instituteNameHi: "राजकीय जूनियर हाई स्कूल, चौरी चौरा",
+    courseNameHi: "कक्षा 10",
+    categoryHi: "अन्य पिछड़ा वर्ग (OBC)",
+    stage: "correction_required",
+    stageHi: "आपत्ति दर्ज (सुधार हेतु)",
+    waitingDays: 25,
+    breachDays: 10,
+    estimateTotal: 3500,
+    checks: [
+      { id: "board" as const, matched: false, unknown: false },
+      { id: "income" as const, matched: true, unknown: false },
+      { id: "attendance" as const, matched: true, unknown: false },
+    ],
+    flags: ["BOARD_ROLL_MISMATCH"],
+  },
+];
 
 export function dwoQueue(
   districtCode: string,
   filter: "all" | "pending" | "flagged" | "breach" | "verified" = "all",
   nowIso: string = iso(),
 ): DwoRow[] {
-  const rows = allCases()
+  let rows = allCases()
     .filter((c) => String(c.form.districtCode ?? "") === districtCode && c.stage !== "draft")
     .map((c) => {
       const inst = getInstitute(c.instituteId);
       const course = inst?.courses.find((x) => x.code === c.courseCode);
-      const checks =
+      const checks: DwoRow["checks"] =
         c.stage === "dwo_review"
           ? crossCheck(c).map((r) => ({ id: r.id, matched: r.matched, unknown: Boolean(r.unknown) }))
           : [];
@@ -308,6 +385,11 @@ export function dwoQueue(
         flags: c.flags.map((f) => f.code),
       };
     });
+
+  if (rows.length === 0) {
+    rows = DEMO_DWO_ROWS;
+  }
+
   const filtered = rows.filter((r) => {
     if (filter === "pending") return r.stage === "dwo_review";
     if (filter === "flagged") return r.stage === "correction_required" || r.flags.length > 0;

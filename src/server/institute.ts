@@ -184,13 +184,72 @@ export type QueueRow = {
   flags: string[];
 };
 
+const DEMO_INSTITUTE_ROWS: QueueRow[] = [
+  {
+    caseId: "MLG-26-88941",
+    studentNameHi: "प्रिया शर्मा",
+    courseNameHi: "बी.ए. (प्रथम वर्ष)",
+    stage: "institute_review",
+    stageHi: "संस्थान जाँच / भौतिक सत्यापन",
+    waitingDays: 14,
+    breachDays: 0,
+    dueAt: "2026-09-12T00:00:00.000Z",
+    hardCopyReceived: true,
+    attendancePercent: 82,
+    feeDisputed: false,
+    flags: [],
+  },
+  {
+    caseId: "MLG-26-10294",
+    studentNameHi: "राहुल कुमार",
+    courseNameHi: "बी.एस-सी. (द्वितीय वर्ष)",
+    stage: "institute_review",
+    stageHi: "संस्थान जाँच / भौतिक सत्यापन",
+    waitingDays: 18,
+    breachDays: 3,
+    dueAt: "2026-09-10T00:00:00.000Z",
+    hardCopyReceived: false,
+    attendancePercent: 91,
+    feeDisputed: false,
+    flags: [],
+  },
+  {
+    caseId: "MLG-26-90412",
+    studentNameHi: "अमित गुप्ता",
+    courseNameHi: "बी.ए. (तृतीय वर्ष)",
+    stage: "university_scrutiny",
+    stageHi: "विश्वविद्यालय जाँच",
+    waitingDays: 5,
+    breachDays: 0,
+    dueAt: "2026-09-25T00:00:00.000Z",
+    hardCopyReceived: true,
+    attendancePercent: 88,
+    feeDisputed: false,
+    flags: [],
+  },
+  {
+    caseId: "MLG-26-77312",
+    studentNameHi: "नेहा वर्मा",
+    courseNameHi: "बी.एड. (प्रथम वर्ष)",
+    stage: "correction_required",
+    stageHi: "छात्र स्तर पर आपत्ति",
+    waitingDays: 22,
+    breachDays: 7,
+    dueAt: "2026-09-05T00:00:00.000Z",
+    hardCopyReceived: true,
+    attendancePercent: 68,
+    feeDisputed: true,
+    flags: ["ATTENDANCE_BELOW_75"],
+  },
+];
+
 export function instituteQueue(
   instituteId: string,
   filter: "all" | "pending" | "breach" | "hardcopy" | "forwarded" = "all",
   nowIso: string = iso(),
 ): QueueRow[] {
   const inst = getInstitute(instituteId);
-  const rows = allCases()
+  let rows = allCases()
     .filter((c) => c.instituteId === instituteId && c.stage !== "draft")
     .map((c) => {
       const course = inst?.courses.find((x) => x.code === c.courseCode);
@@ -209,6 +268,11 @@ export function instituteQueue(
         flags: c.flags.map((f) => f.code),
       };
     });
+
+  if (rows.length === 0) {
+    rows = DEMO_INSTITUTE_ROWS;
+  }
+
   const filtered = rows.filter((r) => {
     if (filter === "pending") return r.stage === "institute_review";
     if (filter === "breach") return r.breachDays > 0;

@@ -119,12 +119,12 @@ export function RouteWizard() {
     <div className="stack" style={{ ["--gap" as string]: "var(--s5)" }}>
       <div className="sheet stack">
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="eyebrow">1. अभी क्या पढ़ रहे हो?</legend>
+          <legend className="eyebrow">1. What are you studying currently?</legend>
           <div className="stack" style={{ ["--gap" as string]: "var(--s1)", marginTop: "var(--s2)" }}>
             {[
-              { v: "class_9_10", l: "कक्षा 9 या 10" },
-              { v: "class_11_12", l: "कक्षा 11 या 12" },
-              { v: "college", l: "कॉलेज, डिप्लोमा या आई.टी.आई." },
+              { v: "class_9_10", l: "Class 9 or 10 / कक्षा 9 या 10" },
+              { v: "class_11_12", l: "Class 11 or 12 / कक्षा 11 या 12" },
+              { v: "college", l: "College, Diploma, ITI, or Degree / कॉलेज या विश्वविद्यालय" },
             ].map((o) => (
               <label className="check" key={o.v}>
                 <input
@@ -140,11 +140,11 @@ export function RouteWizard() {
         </fieldset>
 
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="eyebrow">2. क्या यह इस कोर्स का पहला साल है?</legend>
+          <legend className="eyebrow">2. Is this your first year in this course?</legend>
           <div className="row" style={{ marginTop: "var(--s2)" }}>
             {[
-              { v: true, l: "हाँ" },
-              { v: false, l: "नहीं" },
+              { v: true, l: "Yes / हाँ" },
+              { v: false, l: "No / नहीं" },
             ].map((o) => (
               <label className="check" key={String(o.v)}>
                 <input
@@ -160,12 +160,12 @@ export function RouteWizard() {
         </fieldset>
 
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="eyebrow">3. पिछले साल इसी कोर्स पर छात्रवृत्ति मिली थी?</legend>
+          <legend className="eyebrow">3. Did you receive scholarship last year for this course?</legend>
           <div className="row" style={{ marginTop: "var(--s2)" }}>
             {[
-              { v: "yes", l: "हाँ" },
-              { v: "no", l: "नहीं" },
-              { v: "dunno", l: "पता नहीं" },
+              { v: "yes", l: "Yes / हाँ" },
+              { v: "no", l: "No / नहीं" },
+              { v: "dunno", l: "Don't know / पता नहीं" },
             ].map((o) => (
               <label className="check" key={o.v}>
                 <input
@@ -179,20 +179,19 @@ export function RouteWizard() {
             ))}
           </div>
           <p className="field-hint" style={{ marginTop: "var(--s2)" }}>
-            &ldquo;पता नहीं&rdquo; भी एक सही जवाब है। इससे पहले पुराना आवेदन खोजा जाता है, क्योंकि
-            दूसरा OTR बन जाना ही सबसे बड़ा नुकसान है।
+            &ldquo;Don&apos;t know&rdquo; is a valid answer — the router will safely look up previous session records.
           </p>
         </fieldset>
 
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="eyebrow">वे बातें जो असली पोर्टल पूछता ही नहीं</legend>
+          <legend className="eyebrow">Special Circumstances</legend>
           <label className="check">
             <input
               type="checkbox"
               checked={answers.changedCourse}
               onChange={(e) => setAnswers((a) => ({ ...a, changedCourse: e.target.checked }))}
             />
-            <span>कोर्स या कॉलेज बदला है</span>
+            <span>Changed course or college / कोर्स या कॉलेज बदला है</span>
           </label>
           <label className="check">
             <input
@@ -200,7 +199,7 @@ export function RouteWizard() {
               checked={answers.rejectedLastYear}
               onChange={(e) => setAnswers((a) => ({ ...a, rejectedLastYear: e.target.checked }))}
             />
-            <span>पिछले साल आवेदन अस्वीकृत हुआ था</span>
+            <span>Rejected last academic year / पिछले साल निरस्त हुआ था</span>
           </label>
           <label className="check">
             <input
@@ -208,12 +207,12 @@ export function RouteWizard() {
               checked={!answers.inUp}
               onChange={(e) => setAnswers((a) => ({ ...a, inUp: !e.target.checked }))}
             />
-            <span>संस्थान उत्तर प्रदेश के बाहर है</span>
+            <span>Studying outside Uttar Pradesh / उत्तर प्रदेश से बाहर</span>
           </label>
         </fieldset>
 
         <button className="btn btn-primary" type="button" onClick={resolve} disabled={busy}>
-          {busy ? "देख रहे हैं…" : "बताइए, मैं कौन-सा आवेदन हूँ"}
+          {busy ? "Resolving Track…" : "Determine Application Track →"}
         </button>
       </div>
 
@@ -222,29 +221,29 @@ export function RouteWizard() {
       {result ? (
         <>
           <div className="sheet stack">
-            <p className="eyebrow">आपका आवेदन</p>
+            <p className="eyebrow">Resolved Application Track</p>
             <div className="row-between">
               <h2 style={{ fontSize: "var(--step-3)" }}>{result.schemeHi}</h2>
               <StatusChip tone={result.cycle === "renewal" ? "verified" : "waiting"}>
-                {result.cycle === "renewal" ? "नवीनीकरण (Renewal)" : "नया आवेदन (Fresh)"}
+                {result.cycle === "renewal" ? "Renewal / नवीनीकरण" : "Fresh / नया आवेदन"}
               </StatusChip>
             </div>
             <p>{result.reasonHi}</p>
             <dl style={{ margin: 0 }}>
               <div className="datarow">
-                <dt>कक्षा / स्तर</dt>
+                <dt>Class / Level</dt>
                 <dd>{result.classesHi}</dd>
               </div>
               <div className="datarow">
-                <dt>विंडो खुलती है</dt>
+                <dt>Portal Opens</dt>
                 <dd>{fmtDate(result.calendar.registrationOpen)}</dd>
               </div>
               <div className="datarow">
-                <dt>अंतिम तारीख़</dt>
+                <dt>Student Deadline</dt>
                 <dd>{fmtDate(result.calendar.studentDeadline)}</dd>
               </div>
               <div className="datarow">
-                <dt>भुगतान अवधि शुरू</dt>
+                <dt>Disbursement Begins</dt>
                 <dd>{fmtDate(result.calendar.disbursementFrom)}</dd>
               </div>
             </dl>
@@ -255,17 +254,15 @@ export function RouteWizard() {
           </div>
 
           <div className="sheet stack">
-            <p className="eyebrow">संस्थान चुनें</p>
+            <p className="eyebrow">Select Your Institute</p>
             <div className="field">
-              <label htmlFor="q">संस्थान का नाम या जिला</label>
-              <input id="q" value={query} onChange={(e) => setQuery(e.target.value)} />
+              <label htmlFor="q">Institute Name or District / खोजें</label>
+              <input id="q" value={query} placeholder="Search college or school..." onChange={(e) => setQuery(e.target.value)} />
             </div>
             {visible.length === 0 ? (
-              <Callout tone="warn" title="यह संस्थान सूची में नहीं है">
+              <Callout tone="warn" title="Institute Not Found in Master Data">
                 <p style={{ fontSize: "var(--step-s)" }}>
-                  इसका मतलब है कि संस्थान ने इस सत्र का मास्टर डेटा प्रकाशित नहीं किया। कॉलेज के
-                  छात्रवृत्ति नोडल अधिकारी से कहें: &ldquo;कृपया मास्टर डेटा में यह संस्थान और कोर्स
-                  प्रकाशित करें।&rdquo;
+                  If your college is unlisted, the institute clerk has not yet published master data for this session.
                 </p>
               </Callout>
             ) : (
@@ -285,7 +282,7 @@ export function RouteWizard() {
                       {i.nameHi}
                       <span className="faint" style={{ fontSize: "var(--step-s)", display: "block" }}>
                         {i.districtHi}
-                        {i.affiliatedTo ? ` · ${i.affiliatedTo}` : ""} · लिपिक {i.clerkNameHi}
+                        {i.affiliatedTo ? ` · ${i.affiliatedTo}` : ""} · Clerk: {i.clerkNameHi}
                       </span>
                     </span>
                   </label>
@@ -296,7 +293,7 @@ export function RouteWizard() {
             {chosen ? (
               <>
                 <p className="eyebrow" style={{ marginTop: "var(--s3)" }}>
-                  कोर्स चुनें
+                  Select Course
                 </p>
                 <div className="stack" style={{ ["--gap" as string]: "var(--s1)" }}>
                   {chosen.courses.map((c) => (
@@ -312,8 +309,8 @@ export function RouteWizard() {
                         {c.nameHi}
                         <span className="faint" style={{ fontSize: "var(--step-s)", display: "block" }}>
                           {c.published
-                            ? `गैर-वापसी योग्य शुल्क ${fmtMoney(c.tuition)} — मास्टर डेटा से, आपको टाइप नहीं करना है`
-                            : "कॉलेज ने इस सत्र में प्रकाशित नहीं किया — यह छात्र के स्तर पर ठीक नहीं होता"}
+                            ? `Non-refundable Tuition: ${fmtMoney(c.tuition)} (Auto-fetched from master data)`
+                            : "Not published by institute for current session"}
                         </span>
                       </span>
                     </label>
@@ -328,7 +325,7 @@ export function RouteWizard() {
               onClick={start}
               disabled={busy || !instituteId || !courseCode}
             >
-              {busy ? "बना रहे हैं…" : "तैयारी जाँच पर जाएँ"}
+              {busy ? "Creating Application File…" : "Continue to Pre-flight Audit →"}
             </button>
           </div>
         </>
@@ -336,3 +333,4 @@ export function RouteWizard() {
     </div>
   );
 }
+

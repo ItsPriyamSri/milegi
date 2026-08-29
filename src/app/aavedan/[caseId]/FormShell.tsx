@@ -11,13 +11,13 @@ import { FIELDS, isRequired, validateField, type FieldSpec } from "@/server/fiel
 import { SCHEMES, type SectionId } from "@/server/config/schemes";
 import type { Cycle, TrackId } from "@/server/types";
 
-const SECTION_TITLES: Record<SectionId, string> = {
-  identity: "पहचान",
-  education: "शिक्षा",
-  previous_result: "पिछला परिणाम",
-  family_docs: "परिवार और प्रमाणपत्र",
-  fee: "शुल्क",
-  declaration: "घोषणा",
+const SECTION_TITLES: Record<SectionId, { en: string; hi: string }> = {
+  identity: { en: "Identity", hi: "पहचान" },
+  education: { en: "Education Details", hi: "शिक्षा" },
+  previous_result: { en: "Previous Academic Result", hi: "पिछला परिणाम" },
+  family_docs: { en: "Family & Certificate Details", hi: "परिवार और प्रमाणपत्र" },
+  fee: { en: "Fee Head Breakdown", hi: "शुल्क" },
+  declaration: { en: "Declaration", hi: "घोषणा" },
 };
 
 export type FormShellProps = {
@@ -40,12 +40,12 @@ export type FormShellProps = {
   correctionFields: string[];
 };
 
-const EXCLUDED_LABEL: Record<string, string> = {
-  exam: "परीक्षा शुल्क",
-  hostel: "छात्रावास",
-  mess: "मेस",
-  caution: "कॉशन मनी",
-  library: "पुस्तकालय जमानत",
+const EXCLUDED_LABEL: Record<string, { en: string; hi: string }> = {
+  exam: { en: "Exam Fee", hi: "परीक्षा शुल्क" },
+  hostel: { en: "Hostel Fee", hi: "छात्रावास" },
+  mess: { en: "Mess Fee", hi: "मेस" },
+  caution: { en: "Caution Deposit", hi: "कॉशन मनी" },
+  library: { en: "Library Deposit", hi: "पुस्तकालय जमानत" },
 };
 
 export function FormShell(props: FormShellProps) {
@@ -88,9 +88,6 @@ export function FormShell(props: FormShellProps) {
     return validateField(spec.name, v, values);
   }
 
-  const saveLabel =
-    saveState === "saved" ? "सेव हो गया" : saveState === "pending" ? "अभी सिंक नहीं हुआ" : "इस फोन पर सेव है";
-
   function completion(section: SectionId): string {
     const specs = specsBySection.get(section) ?? [];
     const required = specs.filter((s) => isRequired(s, { track, cycle }));
@@ -98,7 +95,7 @@ export function FormShell(props: FormShellProps) {
       const v = values[s.name];
       return v !== undefined && v !== null && v !== "" && v !== false;
     });
-    return required.length === 0 ? "" : `${done.length}/${required.length} भर गए`;
+    return required.length === 0 ? "" : `${done.length}/${required.length} filled`;
   }
 
   async function raiseDispute() {
@@ -114,35 +111,38 @@ export function FormShell(props: FormShellProps) {
 
   return (
     <div className="stack" style={{ ["--gap" as string]: "var(--s6)", paddingBottom: "96px" }}>
-      <nav className="row" aria-label="भाग">
-        {sections.map((s) => (
-          <a className="btn btn-quiet" key={s} href={`#sec-${s}`}>
-            {SECTION_TITLES[s]}
+      {/* Connected Step Wizard Header */}
+      <nav className="wizard-nav" aria-label="Application Sections">
+        <span style={{ fontWeight: 800, fontSize: "var(--step-s)", color: "var(--brand-navy)", paddingRight: "var(--s2)" }}>
+          FORM STEPS:
+        </span>
+        {sections.map((s, idx) => (
+          <a className="step-pill" key={s} href={`#sec-${s}`}>
+            <span style={{ opacity: 0.6, fontSize: "0.75rem" }}>0{idx + 1}.</span>
+            <span>{SECTION_TITLES[s].en}</span>
           </a>
         ))}
       </nav>
 
       {correctionOnly ? (
-        <Callout tone="warn" title="सुधार विंडो — केवल आपत्ति वाले खाने खुले हैं">
+        <Callout tone="warn" title="Correction Window — Only flagged fields are unlocked">
           <p style={{ fontSize: "var(--step-s)" }}>
-            बाकी खाने बंद हैं, क्योंकि विभाग की सुधार विंडो में केवल चिह्नित जानकारी बदली जा सकती है।
-            सुधार के बाद नई प्रति 3 दिन में कॉलेज में जमा करनी होगी।
+            Other fields are locked per department policy. After correction, submit updated hard copy to institute within 3 days.
           </p>
         </Callout>
       ) : null}
       {!editable && !correctionOnly ? (
-        <Callout tone="info" title="यह आवेदन लॉक है">
+        <Callout tone="info" title="This application is locked">
           <p style={{ fontSize: "var(--step-s)" }}>
-            लॉक के बाद ऑनलाइन बदलाव सिर्फ़ विभाग की सुधार विंडो में होता है। फ़ाइल की स्थिति{" "}
-            <Link href={`/f/${caseId}`}>यहाँ</Link> देखें।
+            Once locked, online edits occur only during the official correction window. Check status <Link href={`/f/${caseId}`}>here</Link>.
           </p>
         </Callout>
       ) : null}
 
       <section id="sec-identity" className="stack">
         <div className="row-between">
-          <h2>{SECTION_TITLES.identity}</h2>
-          <span className="chip">आधार से</span>
+          <h2>{SECTION_TITLES.identity.en} / {SECTION_TITLES.identity.hi}</h2>
+          <span className="chip">Aadhaar e-KYC</span>
         </div>
         <dl className="sheet" style={{ margin: 0 }}>
           {props.identityRows.map((r) => (
@@ -156,8 +156,7 @@ export function FormShell(props: FormShellProps) {
           ))}
         </dl>
         <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-          नाम और जन्मतिथि आधार से आती है। गलत है तो पहले आधार सुधारें — यहाँ बदलने से फ़ाइल बाद में
-          जिला स्तर पर रुकती है।
+          Name and date of birth are imported directly from Aadhaar e-KYC.
         </p>
       </section>
 
@@ -166,17 +165,19 @@ export function FormShell(props: FormShellProps) {
         .map((section) => (
           <section id={`sec-${section}`} className="stack" key={section}>
             <div className="row-between">
-              <h2>{SECTION_TITLES[section]}</h2>
+              <h2>{SECTION_TITLES[section].en} / {SECTION_TITLES[section].hi}</h2>
               <span className="faint" style={{ fontSize: "var(--step-s)" }}>
                 {completion(section)}
               </span>
             </div>
             <div className="sheet stack">
               {(specsBySection.get(section) ?? []).map((spec) => {
-                const err = localError(spec) ?? (fieldErrors.includes(spec.name) ? "यह बदलाव इस चरण पर स्वीकार नहीं हुआ" : null);
+                const err = localError(spec) ?? (fieldErrors.includes(spec.name) ? "This edit was rejected at this stage" : null);
                 const disabled = !fieldEnabled(spec);
                 const id = `field-${spec.name}`;
                 const value = values[spec.name];
+                const labelText = spec.labelEn || spec.labelHi;
+                const hintText = spec.hintEn || spec.hintHi;
                 if (spec.type === "checkbox") {
                   return (
                     <label className="check" key={spec.name} htmlFor={id}>
@@ -188,10 +189,10 @@ export function FormShell(props: FormShellProps) {
                         onChange={(e) => update(spec.name, e.target.checked)}
                       />
                       <span>
-                        {spec.labelHi}
-                        {spec.hintHi ? (
+                        {labelText}
+                        {hintText ? (
                           <span className="field-hint" style={{ display: "block" }}>
-                            {spec.hintHi}
+                            {hintText}
                           </span>
                         ) : null}
                       </span>
@@ -201,7 +202,7 @@ export function FormShell(props: FormShellProps) {
                 return (
                   <div className="field" key={spec.name}>
                     <label htmlFor={id}>
-                      {spec.labelHi}
+                      {labelText}
                       {isRequired(spec, { track, cycle }) ? (
                         <span className="faint"> *</span>
                       ) : null}
@@ -211,14 +212,14 @@ export function FormShell(props: FormShellProps) {
                         id={id}
                         disabled={disabled}
                         aria-invalid={err ? "true" : undefined}
-                        aria-describedby={spec.hintHi ? `${id}-hint` : undefined}
+                        aria-describedby={hintText ? `${id}-hint` : undefined}
                         value={String(value ?? "")}
                         onChange={(e) => update(spec.name, e.target.value)}
                       >
-                        <option value="">— चुनें —</option>
+                        <option value="">— Select —</option>
                         {spec.options.map((o) => (
                           <option key={o.value} value={o.value}>
-                            {o.hi}
+                            {o.en || o.hi}
                           </option>
                         ))}
                       </select>
@@ -230,7 +231,7 @@ export function FormShell(props: FormShellProps) {
                         disabled={disabled}
                         maxLength={spec.maxLen}
                         aria-invalid={err ? "true" : undefined}
-                        aria-describedby={spec.hintHi ? `${id}-hint` : undefined}
+                        aria-describedby={hintText ? `${id}-hint` : undefined}
                         value={String(value ?? "")}
                         onChange={(e) =>
                           update(
@@ -242,9 +243,9 @@ export function FormShell(props: FormShellProps) {
                         }
                       />
                     )}
-                    {spec.hintHi ? (
+                    {hintText ? (
                       <span className="field-hint" id={`${id}-hint`}>
-                        {spec.hintHi}
+                        {hintText}
                       </span>
                     ) : null}
                     {err ? (
@@ -257,38 +258,38 @@ export function FormShell(props: FormShellProps) {
               })}
               {section === "education" ? (
                 <p className="faint" style={{ fontSize: "var(--step-s)" }}>
-                  छात्रावास चुनने पर रखरखाव भत्ता बदलता है — अनुमान अपने आप नीचे अपडेट होता है।
+                  Hostel selection updates the maintenance allowance band in real time.
                 </p>
               ) : null}
             </div>
           </section>
         ))}
 
+
       <section id="sec-fee" className="stack">
         <div className="row-between">
-          <h2>{SECTION_TITLES.fee}</h2>
-          <span className="chip">कॉलेज मास्टर डेटा से</span>
+          <h2>{SECTION_TITLES.fee.en} / {SECTION_TITLES.fee.hi}</h2>
+          <span className="chip">Master Data Auto-Fetched</span>
         </div>
         <div className="sheet stack">
           <dl style={{ margin: 0 }}>
             <div className="datarow">
-              <dt>गैर-वापसी योग्य शुल्क (गिना जाता है)</dt>
+              <dt>Non-refundable Tuition Fee (Eligible)</dt>
               <dd>
                 <strong>{fmtMoney(props.fee.nonRefundable)}</strong>
               </dd>
             </div>
             {props.fee.excluded.map((h) => (
               <div className="datarow" key={h.key}>
-                <dt>{EXCLUDED_LABEL[h.key] ?? h.key}</dt>
+                <dt>{EXCLUDED_LABEL[h.key]?.en ?? h.key}</dt>
                 <dd className="strike">{fmtMoney(h.amount)}</dd>
               </div>
             ))}
           </dl>
           <p className="muted" style={{ fontSize: "var(--step-s)" }}>
-            छात्रवृत्ति में केवल गैर-वापसी योग्य शुल्क आता है — छात्रावास, मेस, कॉशन मनी, पुस्तकालय और
-            परीक्षा शुल्क नहीं। असली पोर्टल पर यह राशि छात्र खुद टाइप करता है, और गलत आँकड़ा महीनों बाद
-            &ldquo;suspect data&rdquo; बनकर लौटता है।
+            Non-refundable tuition fee is auto-fetched from master data. Excluded heads (hostel, mess, caution deposit) are struck out automatically.
           </p>
+
           <div className="money">
             <span className="money-label">अनुमानित लाभ</span>
             <span className="money-amount">

@@ -3,7 +3,7 @@ import { daysBetween, iso } from "./clock";
 import { calendarFor } from "./config/calendar";
 import { REASONS } from "./config/reasons";
 import { SCHEMES } from "./config/schemes";
-import { districtHi } from "./config/districts";
+import { districtEn, districtHi } from "./config/districts";
 import { AppError } from "./errors";
 import { deriveAlerts, waitingDays as waitingDaysOf, breachDays as breachDaysOf } from "./alerts";
 import { estimateFor, feeFor } from "./fees";
@@ -36,6 +36,7 @@ export function createCase(
     form: {
       districtCode: inst.districtCode,
       aadhaarDemo: profile.aadhaarDemo,
+      otr: profile.otr,
       hosteller: false,
     },
     preflight: [],
@@ -226,10 +227,17 @@ export function caseView(c: Case, nowIso: string = iso()) {
   return {
     id: c.id,
     session: c.session,
+    ids: {
+      caseId: c.id,
+      otr: profile?.otr ?? null,
+      registrationNo: c.registrationNo || null,
+    },
     track: c.track,
     trackHi: SCHEMES[c.track].nameHi,
+    trackEn: SCHEMES[c.track].nameEn,
     cycle: c.cycle,
     cycleHi: c.cycle === "renewal" ? "नवीनीकरण" : "नया आवेदन",
+    cycleEn: c.cycle === "renewal" ? "Renewal" : "Fresh",
     stage: c.stage,
     stageHi: stageLabelHi(c.stage),
     stageEn: stageLabelEn(c.stage),
@@ -243,11 +251,14 @@ export function caseView(c: Case, nowIso: string = iso()) {
     studentNameHi: profile?.nameHi ?? "—",
     categoryHi: profile?.category ?? null,
     districtHi: districtHi(String(c.form.districtCode ?? "")),
+    districtEn: districtEn(String(c.form.districtCode ?? "")),
     instituteId: c.instituteId,
     instituteNameHi: inst?.nameHi ?? "—",
+    instituteNameEn: inst?.nameEn ?? "—",
     affiliatedTo: inst?.affiliatedTo ?? null,
     courseCode: c.courseCode,
     courseNameHi: course?.nameHi ?? c.courseCode,
+    courseNameEn: course?.nameEn ?? c.courseCode,
     form: maskForm(c.form),
     preflight: c.preflight,
     certificates: {
@@ -286,18 +297,28 @@ export function trackView(c: Case, nowIso: string = iso()) {
   const full = caseView(c, nowIso);
   return {
     id: full.id,
+    ids: full.ids,
     session: full.session,
+    track: full.track,
     trackHi: full.trackHi,
+    trackEn: full.trackEn,
+    cycle: full.cycle,
     cycleHi: full.cycleHi,
+    cycleEn: full.cycleEn,
     stage: full.stage,
     stageHi: full.stageHi,
+    stageEn: full.stageEn,
     stageEnteredAt: full.stageEnteredAt,
     waitingDays: full.waitingDays,
     breachDays: full.breachDays,
     owner: full.owner,
     dueAt: full.dueAt,
+    otr: full.otr,
+    registrationNo: full.registrationNo,
     instituteNameHi: full.instituteNameHi,
+    instituteNameEn: full.instituteNameEn,
     courseNameHi: full.courseNameHi,
+    courseNameEn: full.courseNameEn,
     estimate: full.estimate,
     hardCopy: full.hardCopy,
     correction: full.correction,

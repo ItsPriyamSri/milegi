@@ -1,17 +1,10 @@
-import { handler, ok, readJson, str } from "@/server/http";
-import { AppError } from "@/server/errors";
+import { handler, ok, readJson } from "@/server/http";
 import { getSim, putSim } from "@/server/store";
+import { requireMobile } from "@/server/mobile";
 
 export const POST = handler(async (req) => {
   const body = await readJson(req);
-  const mobile = str(body.mobile, "मोबाइल नंबर", 10);
-  if (!/^[6-9]\d{9}$/.test(mobile)) {
-    throw new AppError("BAD_MOBILE", {
-      hi: "10 अंकों का मोबाइल नंबर डालें (6-9 से शुरू)।",
-      en: "Enter a 10-digit mobile number starting 6-9.",
-      status: 422,
-    });
-  }
+  const mobile = requireMobile(body.mobile);
   const otp = String(100000 + Math.floor(Math.random() * 899999));
   const sim = getSim();
   sim.otpFor[mobile] = otp;

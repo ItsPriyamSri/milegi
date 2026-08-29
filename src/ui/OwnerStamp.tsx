@@ -9,50 +9,55 @@ export function OwnerStamp(props: {
 }): JSX.Element {
   if (!props.owner) {
     return (
-      <div className="stamp">
-        <div className="stamp-kicker">फ़ाइल स्थिति · FILE DISPOSITION</div>
-        <div className="stamp-name">प्रक्रिया पूर्ण / आगे कोई कार्रवाई लंबित नहीं</div>
+      <div className="stamp sheet">
+        <div className="stamp-kicker eyebrow">File Status · स्थिति</div>
+        <div className="stamp-name" style={{ fontSize: "var(--step-1)", fontWeight: 700, color: "var(--ink)", marginTop: "var(--s1)" }}>
+          Process Completed / No Pending Action
+        </div>
       </div>
     );
   }
   return (
-    <div className="stamp">
+    <div className="stamp sheet stack" style={{ ["--gap" as string]: "var(--s2)" }}>
       <div className="row-between">
-        <div className="stamp-kicker">ज़िम्मेदार अधिकारी · FILE CUSTODIAN</div>
+        <div className="stamp-kicker eyebrow">Assigned Officer · ज़िम्मेदार अधिकारी</div>
         {props.breachDays > 0 ? (
           <span className="chip" data-tone="breach">
-            ▲ समय सीमा से {fmtDays(props.breachDays, "hi")} देर
+            ▲ Overdue by {fmtDays(props.breachDays, "en")}
           </span>
         ) : props.waitingDays > 0 ? (
           <span className="faint" style={{ fontSize: "var(--step-s)" }}>
-            {fmtDays(props.waitingDays, "hi")} से इसी चरण पर
+            At this stage for {fmtDays(props.waitingDays, "en")}
           </span>
         ) : null}
       </div>
-      <div className="stamp-name">{props.owner.nameHi}</div>
-      <div className="stamp-meta">
+      <div className="stamp-name" style={{ fontSize: "var(--step-2)", fontWeight: 800, color: "var(--ink)" }}>
+        {props.owner.nameHi}
+      </div>
+      <div className="stamp-meta muted" style={{ fontSize: "var(--step-s)" }}>
         {props.owner.designationHi} · {props.owner.orgHi}
       </div>
       {props.owner.contactHint ? (
-        <div className="stamp-meta faint">{props.owner.contactHint}</div>
+        <div className="stamp-meta faint" style={{ fontSize: "var(--step-s)" }}>{props.owner.contactHint}</div>
       ) : null}
       {props.dueAt ? (
         <div
           className="row-between"
           style={{
-            marginTop: "var(--s3)",
+            marginTop: "var(--s2)",
             paddingTop: "var(--s2)",
             borderTop: "1px solid var(--rule)",
           }}
         >
           <span className="faint" style={{ fontSize: "var(--step-s)" }}>
-            कार्रवाई की अंतिम तारीख़
+            Action Deadline
           </span>
-          <span className="tnum" style={{ fontWeight: 700 }}>
-            {fmtWeekday(props.dueAt, "hi")}
+          <span className="tnum" style={{ fontWeight: 700, color: "var(--ink)" }}>
+            {fmtWeekday(props.dueAt, "en")}
           </span>
         </div>
       ) : null}
     </div>
   );
 }
+

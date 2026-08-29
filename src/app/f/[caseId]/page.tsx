@@ -39,6 +39,8 @@ export default async function CaseFile({
   const isPaid = c.stage === "paid";
   const tone = STAGE_TONE[c.stage] ?? "neutral";
 
+  const isEn = lang === "en";
+
   return (
     <Shell lang={lang}>
       <DutyStrip
@@ -50,34 +52,69 @@ export default async function CaseFile({
       />
 
       {locked ? (
-        <Callout tone="ok" title="आवेदन सफलतापूर्वक लॉक हो गया">
-          <p>
-            पंजीकरण संख्या: <span className="mono tnum" style={{ fontSize: "var(--step-2)", fontWeight: 700 }}>{c.registrationNo}</span>
-          </p>
-          <p style={{ marginTop: "var(--s2)", fontSize: "var(--step-s)" }}>
-            अंतिम प्रिंट, शुल्क रसीद और मार्कशीट <strong>{fmtWeekday(c.hardCopy.dueAt)}</strong> तक कॉलेज में जमा करें और पावती रसीद लें।
+        <Callout tone="ok" title={isEn ? "Application Locked Successfully / आवेदन सफलतापूर्वक लॉक हो गया" : "आवेदन सफलतापूर्वक लॉक हो गया"}>
+          <p style={{ fontSize: "var(--step-s)" }}>
+            {isEn
+              ? `Submit final print, fee receipt & marksheets to college by ${fmtWeekday(c.hardCopy.dueAt)}.`
+              : `अंतिम प्रिंट, शुल्क रसीद और मार्कशीट ${fmtWeekday(c.hardCopy.dueAt)} तक कॉलेज में जमा करें और पावती रसीद लें।`}
           </p>
         </Callout>
       ) : null}
 
-      <div style={{ marginTop: locked ? "var(--s4)" : 0 }}>
-        <PageHead
-          eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
-          title="आपकी छात्रवृत्ति फ़ाइल"
-          meta={
-            <div className="row" style={{ gap: "var(--s3)", marginTop: "var(--s1)" }}>
-              <span className="mono tnum" style={{ fontSize: "var(--step-s)" }}>
-                पंजीकरण: {c.registrationNo ?? "लंबित"}
-              </span>
-              <span className="faint tnum" style={{ fontSize: "var(--step-s)" }}>
-                {fmtDays(c.waitingDays)} से इस चरण पर
-              </span>
-            </div>
-          }
-        />
+      {/* Above-the-fold case card with 3 labelled IDs, Fresh/Renewal, Estimate, and Copyable links */}
+      <div className="sheet stack" style={{ margin: "var(--s4) 0 var(--s5)", ["--gap" as string]: "var(--s4)" }}>
+        <div className="row-between">
+          <div className="stack" style={{ ["--gap" as string]: "4px" }}>
+            <span className="eyebrow">
+              {c.trackHi} · {c.cycle === "renewal" ? "Renewal Application" : "Fresh Application"}
+            </span>
+            <h1 style={{ fontSize: "var(--step-2)", fontWeight: 800 }}>
+              {isEn ? "Scholarship Application File" : "आपकी छात्रवृत्ति फ़ाइल"}
+            </h1>
+          </div>
+          <StatusChip tone={tone}>
+            {c.stageHi}
+          </StatusChip>
+        </div>
+
+        {/* Three Labelled IDs */}
+        <div className="bento-grid bento-grid-3" style={{ gap: "var(--s3)" }}>
+          <div className="sheet sheet-tight sheet-sunk stack" style={{ ["--gap" as string]: "2px" }}>
+            <span className="faint" style={{ fontSize: "var(--step-s)", fontWeight: 600 }}>1. OTR (Lifetime ID)</span>
+            <span className="mono tnum" style={{ fontSize: "var(--step-1)", fontWeight: 700 }}>{c.otr ?? "—"}</span>
+          </div>
+          <div className="sheet sheet-tight sheet-sunk stack" style={{ ["--gap" as string]: "2px" }}>
+            <span className="faint" style={{ fontSize: "var(--step-s)", fontWeight: 600 }}>2. Session Reg No (15-Digit)</span>
+            <span className="mono tnum" style={{ fontSize: "var(--step-1)", fontWeight: 700 }}>{c.registrationNo ?? "Pending"}</span>
+          </div>
+          <div className="sheet sheet-tight sheet-sunk stack" style={{ ["--gap" as string]: "2px" }}>
+            <span className="faint" style={{ fontSize: "var(--step-s)", fontWeight: 600 }}>3. Application Case ID</span>
+            <span className="mono tnum" style={{ fontSize: "var(--step-1)", fontWeight: 700 }}>{c.id}</span>
+          </div>
+        </div>
+
+        {/* Estimate with basis */}
+        <div className="row-between" style={{ borderTop: "1px solid var(--rule)", paddingTop: "var(--s3)" }}>
+          <Money
+            amount={c.estimate.total}
+            label={isEn ? "Estimated Benefit (Tuition Reimbursement + Maintenance)" : "अनुमानित लाभ (शुल्क प्रतिपूर्ति + रखरखाव भत्ता)"}
+            basis={c.estimate.basisHi}
+          />
+          <div className="row" style={{ gap: "var(--s2)" }}>
+            <Link className="btn btn-sm btn-quiet" href={`/t/${c.id}`}>
+              Share Track Link (/t/{c.id})
+            </Link>
+            {c.otr ? (
+              <Link className="btn btn-sm btn-quiet" href={`/t/${c.otr}`}>
+                Share OTR Link (/t/{c.otr})
+              </Link>
+            ) : null}
+          </div>
+        </div>
       </div>
 
-      <div className="split split-side" style={{ marginTop: "var(--s5)" }}>
+      <div className="split split-side" style={{ marginTop: "var(--s4)" }}>
+
         {/* Main Column */}
         <div className="stack" style={{ ["--gap" as string]: "var(--s5)" }}>
           {/* Mobile-first Owner Stamp & Money */}

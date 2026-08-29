@@ -5,6 +5,7 @@ export const POST = handler(async (req) => {
   const body = await readJson(req);
   const found = recoverIdentity({
     ...(typeof body.mobile === "string" ? { mobile: body.mobile.trim() } : {}),
+    ...(typeof body.otr === "string" ? { otr: body.otr.trim() } : {}),
     ...(typeof body.boardRollNo === "string" ? { boardRollNo: body.boardRollNo.trim() } : {}),
     ...(body.passingYear ? { passingYear: Number(body.passingYear) } : {}),
   });
@@ -12,5 +13,6 @@ export const POST = handler(async (req) => {
     found: Boolean(found.profile),
     otr: found.profile?.otr ?? null,
     hintHi: found.hintHi,
+    hintEn: found.hintEn,
   });
 });

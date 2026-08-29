@@ -10,7 +10,15 @@ export function OtpBoxes(props: {
 }): JSX.Element {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const digits = (props.value || "").padEnd(6, " ").slice(0, 6).split("");
+  function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted) {
+      props.onChange(pasted);
+      const targetIdx = Math.min(pasted.length - 1, 5);
+      inputRefs.current[targetIdx]?.focus();
+    }
+  }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>, idx: number) {
     const val = e.target.value.replace(/\D/g, "");
@@ -20,7 +28,14 @@ export function OtpBoxes(props: {
       props.onChange(chars.join("").trimEnd());
       return;
     }
-    const char = val[val.length - 1];
+    if (val.length > 1) {
+      const pasted = val.slice(0, 6);
+      props.onChange(pasted);
+      const targetIdx = Math.min(pasted.length - 1, 5);
+      inputRefs.current[targetIdx]?.focus();
+      return;
+    }
+    const char = val;
     const current = (props.value || "").split("");
     while (current.length < idx) current.push("");
     current[idx] = char;
@@ -41,18 +56,8 @@ export function OtpBoxes(props: {
     }
   }
 
-  function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (pasted) {
-      props.onChange(pasted);
-      const targetIdx = Math.min(pasted.length, 5);
-      inputRefs.current[targetIdx]?.focus();
-    }
-  }
-
   return (
-    <div className="otp" id={props.id} onPaste={handlePaste}>
+    <div className="otp" id={props.id}>
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const char = props.value[i] || "";
         return (
@@ -64,10 +69,11 @@ export function OtpBoxes(props: {
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
-            maxLength={1}
+            maxLength={6}
             value={char}
             disabled={props.disabled}
-            aria-label={`OTP अंक ${i + 1}`}
+            aria-label={`OTP digit ${i + 1}`}
+            onPaste={handlePaste}
             onChange={(e) => handleChange(e, i)}
             onKeyDown={(e) => handleKeyDown(e, i)}
           />
@@ -76,3 +82,4 @@ export function OtpBoxes(props: {
     </div>
   );
 }
+

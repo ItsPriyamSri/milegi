@@ -11,16 +11,22 @@ export default async function Aavedan({ params }: { params: Promise<{ caseId: st
   const c = await loadOwnCase(caseId);
   const prefilled = c.events.some((e) => e.type === "prefilled_from_last_year");
 
+  const isEn = lang === "en";
+
   return (
-    <Shell lang={lang} narrow>
+    <Shell lang={lang} narrow hideFooter>
       <PageHead
-        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
-        title="एक फ़ॉर्म, एक पेज"
+        eyebrow={`UNIFIED FORM · ${c.trackHi} · ${c.id}`}
+        title={isEn ? "Single Page Application Form / एक फ़ॉर्म, एक पेज" : "एक फ़ॉर्म, एक पेज / Application Form"}
         meta={
           <p className="measure muted">
             {prefilled
-              ? "पिछले वर्ष की जानकारी भर दी गई है। नवीनीकरण में असल में तीन ही चीज़ें बदलती हैं — परिणाम, अंक और इस वर्ष का शुल्क।"
-              : "हर खाना यहीं भरा जाता है, कोई अलग डैशबोर्ड नहीं। जो कुछ भी टाइप करते हैं वह हर कीस्ट्रोक पर इस फ़ोन पर सेव होता है, फिर सर्वर पर।"}
+              ? isEn
+                ? "Previous year data has been pre-filled. Only result, marks, and current fee need updating for renewals."
+                : "पिछले वर्ष की जानकारी भर दी गई है। नवीनीकरण में असल में तीन ही चीज़ें बदलती हैं — परिणाम, अंक और इस वर्ष का शुल्क।"
+              : isEn
+                ? "All inputs live on this single page. Every keystroke is saved locally first, then synced seamlessly."
+                : "हर खाना यहीं भरा जाता है, कोई अलग डैशबोर्ड नहीं। जो कुछ भी टाइप करते हैं वह हर कीस्ट्रोक पर सहेजा जाता है।"}
           </p>
         }
       />

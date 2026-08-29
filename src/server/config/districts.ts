@@ -17,3 +17,6 @@ export const DISTRICTS: { code: string; hi: string; en: string }[] = [
 export function districtHi(code: string): string {
   return DISTRICTS.find((d) => d.code === code)?.hi ?? `जिला कोड ${code}`;
 }
+export function districtEn(code: string): string {
+  return DISTRICTS.find((d) => d.code === code)?.en ?? `District ${code}`;
+}

@@ -7,6 +7,7 @@ export type FieldSpec = {
   labelHi: string;
   labelEn: string;
   hintHi?: string;
+  hintEn?: string;
   type: "text" | "number" | "date" | "select" | "checkbox" | "tel";
   section: SectionId;
   options?: { value: string; hi: string; en: string }[];
@@ -26,11 +27,22 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "डेमो आधार संख्या",
     labelEn: "Demo Aadhaar number",
     hintHi: "0000 से शुरू होने वाला 12 अंकों का डेमो नंबर — असली आधार यहाँ काम नहीं करेगा",
+    hintEn: "12-digit demo number starting 0000 — a real Aadhaar will not work here",
     type: "text",
     section: "identity",
     maxLen: 12,
     readOnly: true,
     validate: (v) => (isDemoAadhaar(String(v)) ? null : DEMO_AADHAAR_MESSAGE_HI),
+  },
+  otr: {
+    name: "otr",
+    labelHi: "OTR (स्थायी पहचान — ट्रैकिंग नंबर भी)",
+    labelEn: "OTR (lifetime ID — also a tracking number)",
+    hintHi: "एक बार बनता है। आवेदन संख्या या पंजीकरण की जगह भी इससे फ़ाइल खोली जा सकती है।",
+    hintEn: "Minted once. You can also track the file with this number.",
+    type: "text",
+    section: "identity",
+    readOnly: true,
   },
   districtCode: {
     name: "districtCode",
@@ -76,6 +88,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "आवासीय छात्र (छात्रावास में रहते हैं)",
     labelEn: "Hosteller",
     hintHi: "रखरखाव भत्ता इसी से तय होता है",
+    hintEn: "This is what the maintenance allowance uses",
     type: "checkbox",
     section: "education",
   },
@@ -97,6 +110,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "हाई स्कूल रोल नंबर",
     labelEn: "High-school roll number",
     hintHi: "मार्कशीट पर जैसा छपा है वैसा ही — यही नंबर बोर्ड डेटाबेस से मिलाया जाता है",
+    hintEn: "Exactly as printed on the marksheet — this is matched against the board database",
     type: "text",
     section: "education",
     maxLen: 20,
@@ -107,6 +121,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "नामांकन संख्या",
     labelEn: "Enrolment number",
     hintHi: "कॉलेज की नामांकन पर्ची से — स्पेस या डैश न डालें",
+    hintEn: "From the college enrolment slip — no spaces or dashes",
     type: "text",
     section: "education",
     maxLen: 30,
@@ -145,6 +160,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "कुल अंक",
     labelEn: "Marks total",
     hintHi: "पूरे वर्ष के कुल अंक — CGPA या एक सेमेस्टर के अंक नहीं",
+    hintEn: "Full-year total marks — not CGPA or a single semester",
     type: "number",
     section: "previous_result",
     requiredWhen: ({ cycle }) => cycle === "renewal",
@@ -176,6 +192,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "राशन कार्ड संख्या",
     labelEn: "Ration card number",
     hintHi: "न हो तो 0 भरें — यही आधिकारिक तरीका है",
+    hintEn: "If you have none, enter 0 — that is the official placeholder",
     type: "text",
     section: "family_docs",
     maxLen: 20,
@@ -222,6 +239,7 @@ export const FIELDS: Record<string, FieldSpec> = {
     labelHi: "मेरी उपस्थिति 75% या अधिक है",
     labelEn: "My attendance is 75% or more",
     hintHi: "संस्थान इसे अलग से प्रमाणित करता है; 75% से कम पर फ़ाइल आगे नहीं बढ़ती",
+    hintEn: "The institute certifies this separately; below 75% the file does not move",
     type: "checkbox",
     section: "declaration",
     requiredWhen: always,

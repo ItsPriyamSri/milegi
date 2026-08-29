@@ -13,6 +13,7 @@ export type Scheme = {
   nameHi: string;
   nameEn: string;
   classesHi: string;
+  classesEn: string;
   sections: SectionId[];
   needsMarks: boolean;
   feeReimbursement: boolean;
@@ -36,6 +37,7 @@ export const SCHEMES: Record<TrackId, Scheme> = {
     nameHi: "पूर्वदशम (कक्षा 9-10)",
     nameEn: "Pre-Matric (Class 9-10)",
     classesHi: "कक्षा 9 और 10",
+    classesEn: "Class 9 and 10",
     sections: FULL,
     needsMarks: true,
     feeReimbursement: false,
@@ -48,6 +50,7 @@ export const SCHEMES: Record<TrackId, Scheme> = {
     nameHi: "दशमोत्तर इंटर (कक्षा 11-12)",
     nameEn: "Post-Matric Inter (Class 11-12)",
     classesHi: "कक्षा 11 और 12",
+    classesEn: "Class 11 and 12",
     sections: FULL,
     needsMarks: true,
     feeReimbursement: true,
@@ -60,6 +63,7 @@ export const SCHEMES: Record<TrackId, Scheme> = {
     nameHi: "दशमोत्तर (इंटर के अतिरिक्त)",
     nameEn: "Post-Matric other than Inter",
     classesHi: "डिग्री, डिप्लोमा, आई.टी.आई.",
+    classesEn: "Degree, diploma, ITI",
     sections: FULL,
     needsMarks: true,
     feeReimbursement: true,
@@ -72,6 +76,7 @@ export const SCHEMES: Record<TrackId, Scheme> = {
     nameHi: "उत्तर प्रदेश के बाहर अध्ययनरत",
     nameEn: "Studying outside UP",
     classesHi: "दूसरे राज्य का संस्थान",
+    classesEn: "Institute outside UP",
     sections: FULL,
     needsMarks: true,
     feeReimbursement: true,

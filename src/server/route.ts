@@ -16,12 +16,18 @@ export type RouteResult = {
   reasonEn: string;
   /** Always present: how to recover an old registration number instead of minting a second OTR. */
   recoveryHi: string;
+  recoveryEn: string;
   warnHi: string | null;
+  warnEn: string | null;
 };
 
 const RECOVERY_HI =
   "पिछले साल का पंजीकरण नंबर भूल गए? हाई स्कूल रोल नंबर, पासिंग ईयर और पंजीकृत मोबाइल से वह वापस मिल जाता है — " +
   "नया OTR कभी न बनाएँ।";
+const RECOVERY_EN =
+  "Forgot last year's registration number? High-school roll number, passing year and the registered mobile recover it — never mint a second OTR.";
+
+const RECOVERY = { recoveryHi: RECOVERY_HI, recoveryEn: RECOVERY_EN };
 
 export function routeStudent(a: RouteAnswers): RouteResult {
   const track: TrackId = !a.inUp
@@ -37,8 +43,9 @@ export function routeStudent(a: RouteAnswers): RouteResult {
     return {
       track,
       cycle: "fresh",
-      recoveryHi: RECOVERY_HI,
+      ...RECOVERY,
       warnHi: null,
+      warnEn: null,
       reasonHi: "कोर्स बदला है — इसलिए यह नया (Fresh) आवेदन है, नवीनीकरण नहीं।",
       reasonEn: "Course changed, so this is a Fresh application, not a Renewal.",
     };
@@ -47,8 +54,9 @@ export function routeStudent(a: RouteAnswers): RouteResult {
     return {
       track,
       cycle: "fresh",
-      recoveryHi: RECOVERY_HI,
+      ...RECOVERY,
       warnHi: null,
+      warnEn: null,
       reasonHi: "पिछले साल आवेदन अस्वीकृत हुआ था — नियम के मुताबिक यह नया आवेदन है।",
       reasonEn: "Last year was rejected, so this is a Fresh application.",
     };
@@ -57,8 +65,9 @@ export function routeStudent(a: RouteAnswers): RouteResult {
     return {
       track,
       cycle: "fresh",
-      recoveryHi: RECOVERY_HI,
+      ...RECOVERY,
       warnHi: null,
+      warnEn: null,
       reasonHi: "इस कोर्स का पहला साल — नया (Fresh) आवेदन।",
       reasonEn: "First year of this course — Fresh application.",
     };
@@ -67,9 +76,10 @@ export function routeStudent(a: RouteAnswers): RouteResult {
     return {
       track,
       cycle: "renewal",
-      recoveryHi: RECOVERY_HI,
+      ...RECOVERY,
       warnHi:
         "नवीनीकरण में दूसरा OTR बनाना सबसे बड़ी गलती है — इससे दोनों आवेदन ब्लॉक हो सकते हैं।",
+      warnEn: "Minting a second OTR on a Renewal is the worst mistake — both applications can be blocked.",
       reasonHi: "पिछले साल इसी कोर्स पर छात्रवृत्ति मिली थी — यह नवीनीकरण (Renewal) है।",
       reasonEn: "Scholarship received last year on the same course — this is a Renewal.",
     };
@@ -79,9 +89,11 @@ export function routeStudent(a: RouteAnswers): RouteResult {
   return {
     track,
     cycle: "renewal",
-    recoveryHi: RECOVERY_HI,
+    ...RECOVERY,
     warnHi:
       "अगर पिछला आवेदन मौजूद है और आप नया OTR बना लेते हैं, तो दोनों आवेदन ब्लॉक हो सकते हैं।",
+    warnEn:
+      "If an old application exists and you mint a new OTR, both applications can be blocked.",
     reasonHi:
       a.gotLastYear === "dunno"
         ? "पक्का याद नहीं — इसलिए पहले पुराना आवेदन खोजा जाएगा (यही सुरक्षित रास्ता है)।"

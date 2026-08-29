@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Noto_Sans, Noto_Sans_Devanagari } from "next/font/google";
+import { Plus_Jakarta_Sans, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
 import { getLang } from "@/lib/lang";
 
-const noto = Noto_Sans({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-latin",
   adjustFontFallback: true,
@@ -14,22 +14,22 @@ const noto = Noto_Sans({
 
 const notoDeva = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-deva",
   adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
-  title: "मिलेगी — छात्रवृत्ति फ़ाइल (प्रोटोटाइप)",
+  title: "Milegi — Scholarship Tracking with Named Owners & Deadlines · मिलेगी",
   description:
-    "उत्तर प्रदेश छात्रवृत्ति सेवा का स्वतंत्र प्रोटोटाइप। हर चरण का एक नाम वाला ज़िम्मेदार और एक तारीख़। नकली डेटा।",
+    "Independent scholarship tracking prototype for UP Saksham. Every stage has a named owner and a deadline. Synthetic data.",
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = await getLang();
   return (
-    <html lang={lang} className={`${notoDeva.variable} ${noto.variable}`}>
+    <html lang={lang} className={`${notoDeva.variable} ${jakarta.variable}`}>
       <body>
         {/*
 THESIS: This surface owns "your file has an owner and a deadline." It refuses a menu of logins with a status word, and it refuses a SaaS card grid.

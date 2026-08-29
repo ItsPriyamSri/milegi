@@ -35,9 +35,12 @@ export function OperatorLogin({
   }
 
   return (
-    <form className="sheet stack" style={{ maxWidth: "420px", margin: "0 auto" }} onSubmit={submit}>
+    <form className="sheet stack" style={{ maxWidth: "440px", margin: "0 auto", ["--gap" as string]: "var(--s4)" }} onSubmit={submit}>
+      <h2 style={{ fontSize: "var(--step-2)" }}>
+        {role === "institute" ? "Institute Operator Login" : "District Welfare Officer (DWO) Login"}
+      </h2>
       <div className="field">
-        <label htmlFor="code">{role === "institute" ? "संस्थान" : "जिला"}</label>
+        <label htmlFor="code">{role === "institute" ? "Select Institute / संस्थान" : "Select District / जिला"}</label>
         <select id="code" value={code} onChange={(e) => setCode(e.target.value)}>
           {options.map((o) => (
             <option key={o.code} value={o.code}>
@@ -47,24 +50,25 @@ export function OperatorLogin({
         </select>
       </div>
       <div className="field">
-        <label htmlFor="pin">पिन</label>
+        <label htmlFor="pin">Operator PIN Code / पिन</label>
         <input
           id="pin"
           className="mono"
           inputMode="numeric"
           maxLength={8}
+          placeholder="1234"
           value={pin}
           onChange={(e) => setPin(e.target.value)}
         />
         <span className="field-hint">
-          डेमो पिन जान-बूझकर यहीं लिखा है: <span className="mono">1234</span>. यह एक प्रोटोटाइप है,
-          इसमें छिपाने जैसा कुछ नहीं।
+          Demo PIN printed for evaluation: <code className="mono" style={{ color: "var(--action)", fontWeight: 700 }}>1234</code>.
         </span>
       </div>
       {error ? <ErrorNote error={error} /> : null}
       <button className="btn btn-primary" type="submit" disabled={busy || pin.length === 0}>
-        {busy ? "खोल रहे हैं…" : "लॉगिन"}
+        {busy ? "Authenticating…" : "Login to Console →"}
       </button>
     </form>
   );
 }
+

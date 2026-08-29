@@ -21,7 +21,9 @@ export const POST = handler(async (req) => {
   return ok({
     ...result,
     schemeHi: SCHEMES[result.track].nameHi,
+    schemeEn: SCHEMES[result.track].nameEn,
     classesHi: SCHEMES[result.track].classesHi,
+    classesEn: SCHEMES[result.track].classesEn,
     calendar: calendarFor(result.track, result.cycle),
   });
 });

@@ -16,6 +16,8 @@ test("college + not first year + got it last year = dashmottar renewal", () => {
   assert.equal(r.track, "dashmottar");
   assert.equal(r.cycle, "renewal");
   assert.match(r.reasonHi, /नवीनीकरण/);
+  assert.ok(r.recoveryEn.includes("OTR"));
+  assert.ok(r.warnEn);
 });
 
 test('"पता नहीं" never coerces to fresh — it resolves to the safe side with a recovery route', () => {

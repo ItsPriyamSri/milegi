@@ -44,6 +44,12 @@ test("an Aadhaar-shaped value that is not a demo number is rejected", () => {
   assert.ok(validateField("aadhaarDemo", "234512340001", {})?.includes("डेमो"));
 });
 
+test("the OTR identity field is read-only and bilingual", () => {
+  assert.equal(FIELDS.otr.readOnly, true);
+  assert.ok(FIELDS.otr.labelEn);
+  assert.ok(FIELDS.otr.hintEn);
+});
+
 test("no field named for a bank account or IFSC exists anywhere", () => {
   const all = Object.keys(FIELDS).join(" ").toLowerCase();
   assert.equal(/ifsc|account|khata|bank/.test(all), false);
@@ -52,11 +58,11 @@ test("no field named for a bank account or IFSC exists anywhere", () => {
 test("applyPatch rejects money, stage and identity fields even if the client sends them", () => {
   const { case: after, rejected } = applyPatch(
     makeDraftCase(),
-    { yearOfStudy: 3, nonRefundable: 1, stage: "paid", aadhaarDemo: "000012349999" },
+    { yearOfStudy: 3, nonRefundable: 1, stage: "paid", aadhaarDemo: "000012349999", otr: "UP26-999" },
     STUDENT_ACTOR,
   );
   assert.equal(after.form.yearOfStudy, 3);
-  assert.deepEqual(rejected.sort(), ["aadhaarDemo", "nonRefundable", "stage"]);
+  assert.deepEqual(rejected.sort(), ["aadhaarDemo", "nonRefundable", "otr", "stage"]);
   assert.equal(after.stage, "draft");
 });
 

@@ -58,10 +58,18 @@ test("recovery finds an existing profile from the registered mobile", () => {
   });
   assert.equal(found.profile?.id, created.id);
   assert.ok(found.hintHi.length > 0);
+  assert.ok(found.hintEn.length > 0);
+});
+
+test("recovery also finds a profile from the OTR string", () => {
+  const created = mintOtr(INPUT).profile;
+  const found = recoverIdentity({ otr: created.otr.toLowerCase() });
+  assert.equal(found.profile?.id, created.id);
 });
 
 test("recovery with nothing matching still returns a next step, never an empty failure", () => {
   const found = recoverIdentity({ mobile: "9000000000", boardRollNo: "0000000000", passingYear: 2020 });
   assert.equal(found.profile, undefined);
   assert.match(found.hintHi, /जिला समाज कल्याण|OTR/);
+  assert.ok(found.hintEn.length > 0);
 });

@@ -31,22 +31,29 @@ export default async function Taiyari({ params }: { params: Promise<{ caseId: st
   const warned = c.preflight.filter((i) => i.state === "warn");
   const unknown = c.preflight.filter((i) => i.state === "unknown");
 
+  const isEn = lang === "en";
+
   return (
-    <Shell lang={lang} narrow>
+    <Shell lang={lang} narrow hideFooter>
       <PageHead
-        eyebrow={`${c.trackHi} · ${c.cycleHi} · ${c.id}`}
-        title="तैयारी जाँच (Pre-flight)"
+        eyebrow={`PRE-FLIGHT AUDIT · ${c.trackHi} · ${c.id}`}
+        title={isEn ? "Pre-flight Eligibility Audit / तैयारी जाँच" : "तैयारी जाँच (Pre-flight Audit)"}
         meta={
           <p className="measure muted">
             {blocked.length === 0
-              ? `${c.preflight.length} में से कोई रुकावट नहीं। फ़ॉर्म भरकर लॉक कर सकते हैं।`
-              : `${c.preflight.length} में से ${blocked.length} रुकावट है — फ़ॉर्म भरना शुरू करने से पहले यह ठीक करनी होगी।`}
+              ? isEn
+                ? `0 blockers out of ${c.preflight.length} pre-flight checks. You may fill and lock the form.`
+                : `${c.preflight.length} में से कोई रुकावट नहीं। फ़ॉर्म भरकर लॉक कर सकते हैं।`
+              : isEn
+                ? `${blocked.length} blocker(s) out of ${c.preflight.length} checks must be resolved before form lock.`
+                : `${c.preflight.length} में से ${blocked.length} रुकावट है — फ़ॉर्म भरना शुरू करने से पहले यह ठीक करनी होगी।`}
           </p>
         }
       />
       <p className="faint measure" style={{ fontSize: "var(--step-s)", marginBottom: "var(--s5)" }}>
-        असली पोर्टल पर यह सब 30 मिनट टाइप करने के बाद, अलग डैशबोर्ड पर या दिसंबर में जिला स्तर पर पता
-        चलता है।
+        {isEn
+          ? "On the legacy portal, these errors surfaced in December after 30 minutes of typing."
+          : "असली पोर्टल पर यह सब 30 मिनट टाइप करने के बाद, अलग डैशबोर्ड पर पता चलता है।"}
       </p>
 
       <div className="stack" style={{ ["--gap" as string]: "var(--s5)" }}>

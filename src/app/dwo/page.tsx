@@ -6,16 +6,18 @@ import { OPERATOR_LOGINS } from "@/server/seeds";
 
 export default async function DwoLogin() {
   const lang = await getLang();
+  const isEn = lang === "en";
   const options = OPERATOR_LOGINS.filter((o) => o.role === "dwo");
   return (
     <Shell lang={lang} narrow>
       <PageHead
-        eyebrow="जिला समाज कल्याण कार्यालय"
-        title="जिला छात्रवृत्ति कक्ष"
+        eyebrow="DISTRICT WELFARE OFFICER · जिला समाज कल्याण"
+        title={isEn ? "District Welfare Officer (DWO) Portal" : "जिला छात्रवृत्ति कक्ष"}
         meta={
           <p className="measure muted">
-            यहाँ फ़ाइलें असली डेटाबेस से मिलाई जाती हैं। हर आपत्ति एक कोड है — छात्र को वही कारण और वही
-            उपाय दिखता है। स्वीकृति बैच में सिर्फ़ सत्यापित फ़ाइलें जाती हैं।
+            {isEn
+              ? "Cross-checks records against database rules, codes objections, and executes sanction batches. Demo PIN: 1234."
+              : "यहाँ फ़ाइलें असली डेटाबेस से मिलाई जाती हैं। हर आपत्ति एक कोड है — छात्र को वही कारण और वही उपाय दिखता है।"}
           </p>
         }
       />
@@ -23,4 +25,5 @@ export default async function DwoLogin() {
     </Shell>
   );
 }
+
 
