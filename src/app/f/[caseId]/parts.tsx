@@ -26,31 +26,36 @@ export { StageLedger, chainFor } from "@/ui/StageLedger";
 export function AlertList({
   alerts,
   caseId,
+  lang,
 }: {
   alerts: {
     id: string;
     kind: string;
     severity: "info" | "warn" | "danger";
     titleHi: string;
+    titleEn?: string;
     detailHi: string;
+    detailEn?: string;
     actionHi: string | null;
     actionHref: string | null;
     dueAt: string | null;
   }[];
   caseId: string;
+  lang: "en" | "hi";
 }) {
+  const isEn = lang === "en";
   return (
     <div className="stack" style={{ ["--gap" as string]: "var(--s3)" }}>
       {alerts.map((a) => (
         <Callout
           key={a.id}
           tone={a.severity === "danger" ? "danger" : a.severity === "warn" ? "warn" : "info"}
-          title={a.titleHi}
+          title={isEn ? a.titleEn ?? a.titleHi : a.titleHi}
         >
-          <p style={{ fontSize: "var(--step-s)" }}>{a.detailHi}</p>
+          <p style={{ fontSize: "var(--step-s)" }}>{isEn ? a.detailEn ?? a.detailHi : a.detailHi}</p>
           {a.dueAt && a.kind.startsWith("hardcopy") ? (
             <p className="tnum" style={{ fontSize: "var(--step-s)" }}>
-              {fmtWeekday(a.dueAt)}
+              {fmtWeekday(a.dueAt, lang)}
             </p>
           ) : null}
           {a.actionHi ? (

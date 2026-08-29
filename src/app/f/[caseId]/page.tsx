@@ -150,7 +150,7 @@ export default async function CaseFile({
             </div>
           </div>
 
-          <AlertList alerts={c.alerts} caseId={c.id} />
+          <AlertList alerts={c.alerts} caseId={c.id} lang={lang} />
 
           {actions.length > 0 ? <CaseActions caseId={c.id} actions={actions} /> : null}
 
@@ -348,4 +348,3 @@ export default async function CaseFile({
     </Shell>
   );
 }
-

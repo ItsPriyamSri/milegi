@@ -134,7 +134,7 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
           />
         </div>
 
-        <AlertList alerts={c.alerts} caseId={c.id} />
+        <AlertList alerts={c.alerts} caseId={c.id} lang={lang} />
 
         {c.flags.length > 0 ? (
           <Callout tone="warn" title={isEn ? "Actionable Objections" : "दर्ज आपत्तियाँ"}>
@@ -168,5 +168,4 @@ export default async function PublicTrack({ params }: { params: Promise<{ code: 
     </Shell>
   );
 }
-
 

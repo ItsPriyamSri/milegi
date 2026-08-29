@@ -63,15 +63,19 @@ function seedCatalog(s: Snapshot): void {
   }
   // Demo people leak into unit tests (shared cert numbers, extra PFMS cases).
   if (process.env.NODE_TEST_CONTEXT) return;
+  // Always refresh the printed how-to-try identities. Insert-if-missing left Neon
+  // on the old OTR/reg shapes, so live /t/UP26-8000100001 404'd after a code deploy.
   for (const p of SEED_PROFILES) {
-    if (!s.profiles[p.id]) {
-      s.profiles[p.id] = structuredClone(p);
+    const copy = structuredClone(p);
+    if (JSON.stringify(s.profiles[p.id]) !== JSON.stringify(copy)) {
+      s.profiles[p.id] = copy;
       bag().dirty = true;
     }
   }
   for (const c of SEED_CASES) {
-    if (!s.cases[c.id]) {
-      s.cases[c.id] = structuredClone(c);
+    const copy = structuredClone(c);
+    if (JSON.stringify(s.cases[c.id]) !== JSON.stringify(copy)) {
+      s.cases[c.id] = copy;
       bag().dirty = true;
     }
   }
